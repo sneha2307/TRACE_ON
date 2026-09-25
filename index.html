@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TraceOn</title>
+<style>
+:root{--ink:#161B3D;--mute:#5E6787;--line:#DCE1F5;--bg:#EEF1FF;--indigo:#1F2470;--blue:#3D5AFE;--violet:#7C4DFF;--teal:#0BB5A4;--amber:#FFB020;--coral:#FF5A5F;--l0:#E5484D;--l1:#F59E0B;--l2:#0EA5A4;--l3:#7C4DFF;--l4:#64748B;--sh:0 8px 24px rgba(43,47,143,.13)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:linear-gradient(160deg,#EAF2FF 0%,#F5F8FF 40%,#FFFFFF 65%,#E8F1FE 100%);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums}
+.bg-art{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg-art svg{position:absolute;opacity:.45}
+h1,h2,h3,h4{margin:0;line-height:1.2}
+h2{font-size:22px;font-weight:800;letter-spacing:-.3px}
+h3{font-size:16px;font-weight:750}
+h4{font-size:12.5px;font-weight:750;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 6px}
+p{margin:0 0 10px}
+button{font:inherit;cursor:pointer}
+input,select{font:inherit;color:var(--ink);width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px}
+input:focus,select:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px rgba(61,90,254,.18)}
+button:focus-visible,summary:focus-visible,[role=button]:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}
+.hint{color:var(--mute);font-size:13px}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 6px 16px rgba(61,90,254,.35)}
+.btn.alt{background:#fff;color:var(--indigo);border:1.5px solid var(--line);box-shadow:none}
+.btn.wide{width:100%}
+.err{background:#FFE9EA;color:#A61B22;border-radius:10px;padding:9px 12px;font-size:14px;margin-top:12px}
+
+/* login (TraceOn front page) */
+#pg-login{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;color:#0B1B3A;background:linear-gradient(115deg,#0A2E86 0%,#1657C9 30%,#2E86DE 62%,#8FD3F4 100%)}
+.lg-top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 40px;position:relative;z-index:2;background:rgba(6,20,60,.18);border-bottom:1px solid rgba(255,255,255,.18)}
+.lg-brand{display:flex;align-items:center;gap:16px}
+.lg-name{font-size:26px;font-weight:700;letter-spacing:.09em;line-height:1.15;color:#fff}
+.lg-tag{font-size:13.5px;color:#DCEBFF;margin-top:4px}
+.lg-tag i{display:inline-block;width:1px;height:12px;background:rgba(255,255,255,.5);margin:0 10px;vertical-align:-1px}
+.lg-nav{font-size:13.5px;color:#E3EEFF;padding-top:0;white-space:nowrap}
+.lg-nav i{font-style:normal;color:rgba(255,255,255,.55);margin:0 10px}
+.lg-main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,410px);gap:40px;align-items:center;padding:8px 40px 20px;position:relative;z-index:1}
+.lg-hero{position:relative;align-self:stretch;display:flex;flex-direction:column;justify-content:center;min-height:440px}
+.lg-art{position:absolute;left:-40px;top:0;width:calc(100% + 60px);height:100%;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.3) 0,#000 45%,#000 88%,transparent 100%);mask-image:linear-gradient(90deg,rgba(0,0,0,.3) 0,#000 45%,#000 88%,transparent 100%)}
+.lg-copy{position:relative;z-index:1;max-width:330px;padding-bottom:90px;text-shadow:0 1px 12px rgba(4,9,24,.35)}
+.lg-copy:before{content:"";display:block;width:52px;height:3px;background:#fff;margin-bottom:22px}
+.lg-copy h1{font-size:30px;font-weight:400;line-height:1.2;letter-spacing:-.2px;color:#fff}
+.lg-copy h1 b{display:block;font-size:46px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.1}
+.lg-copy h1 span{display:block;font-size:22px;font-weight:600;color:#E3EEFF;margin-top:2px}
+.lg-copy p{margin:14px 0 0;font-size:14.5px;line-height:1.6;color:#EAF2FF}
+.lg-card{position:relative;z-index:1;background:#fff;border:1px solid #DCE1F5;border-radius:16px;padding:30px 30px 24px;box-shadow:0 24px 60px rgba(10,30,80,.35)}
+.lg-card h2{font-size:25px;font-weight:700;letter-spacing:-.2px;color:#0B1B3A}
+.lg-sub{margin:4px 0 22px;font-size:14px;color:#5E6787}
+.lg-card label.fld{position:relative;display:block;margin:0 0 14px;font-weight:400}
+.lg-card label.fld svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:#7C8AB0;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.lg-card input[type=text],.lg-card input[type=password],.lg-card input[type=email]{height:44px;padding:0 44px 0 46px;background:#F4F6FD;color:#161B3D;border:1.5px solid #DCE1F5;border-radius:10px;font-size:14px}
+.lg-card input::placeholder{color:#8B95B8}
+.lg-card input:focus{border-color:#2E86DE;box-shadow:0 0 0 3px rgba(46,134,222,.18)}
+.lg-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;background:none;border-radius:8px;display:grid;place-items:center;padding:0}
+.lg-card label.fld .lg-eye svg{position:static;transform:none;width:20px;height:20px}
+.lg-eye:hover{background:rgba(120,160,255,.14)}
+.lg-card button:focus-visible,.lg-card a:focus-visible{outline:3px solid #2E86DE;outline-offset:2px}
+.lg-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13.5px;color:#5E6787;margin:2px 0 20px}
+.lg-row label{display:flex;align-items:center;gap:9px;margin:0;font-size:13.5px;font-weight:400;cursor:pointer}
+.lg-card input[type=checkbox]{width:17px;height:17px;padding:0;margin:0;accent-color:#2E86DE}
+.lg-link{color:#1657C9;background:none;border:0;padding:0;font-size:13.5px;text-decoration:underline;text-underline-offset:2px}
+.lg-btn{width:100%;height:46px;border:0;border-radius:10px;color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(180deg,#3F86FF,#2A62E8);box-shadow:0 8px 22px rgba(47,107,255,.4)}
+.lg-btn:hover{filter:brightness(1.08)}
+.lg-btn.ghost{background:transparent;box-shadow:none;border:1px solid #3B82F6;color:#1D4ED8;font-weight:600;font-size:14.5px}
+.lg-btn.ghost:hover{background:rgba(59,130,246,.14);filter:none}
+.lg-btn.demo{margin-top:10px;background:linear-gradient(180deg,#0BB5A4,#0A8F82);box-shadow:0 8px 22px rgba(11,181,164,.35)}
+.lg-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lg-or{display:flex;align-items:center;gap:14px;margin:16px 0;font-size:12.5px;color:#8B95B8}
+.lg-or:before,.lg-or:after{content:"";flex:1;height:1px;background:#E5E9F7}
+.lg-note{margin:18px 0 0;text-align:center;font-size:11.5px;color:#8B95B8}
+.lg-card .err{background:#FFE9EA;color:#A61B22;border:1px solid #F6C3C6;margin:0 0 14px}
+.lg-card .ok{background:#E4FBF7;color:#0A7A6E;border:1px solid #B7EEE4;border-radius:10px;padding:9px 12px;font-size:14px;margin:0 0 14px}
+.lg-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 40px 20px;font-size:12.5px;color:#E3EEFF;position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.2);background:rgba(6,20,60,.22)}
+.lg-foot ul{display:flex;align-items:center;list-style:none;margin:0;padding:0}
+.lg-foot li{display:flex;align-items:center;gap:8px;padding:0 20px;border-left:1px solid rgba(255,255,255,.3)}
+.lg-foot li:first-child{padding-left:0;border-left:0}
+.lg-foot svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lg-foot .sih{display:flex;align-items:center;gap:8px}
+@media(max-width:900px){
+  .lg-top{padding:20px 20px 4px}.lg-nav{display:none}
+  .lg-name{font-size:23px}.lg-tag{font-size:12.5px}
+  .lg-main{grid-template-columns:1fr;gap:8px;padding:0 16px 24px}
+  .lg-hero{min-height:0;padding:20px 4px 0}
+  .lg-art{left:0;width:100%;opacity:.4;-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent 100%);mask-image:linear-gradient(180deg,#000 30%,transparent 100%)}
+  .lg-copy{padding-bottom:16px;max-width:none}
+  .lg-copy h1{font-size:24px}.lg-copy h1 b{font-size:38px}.lg-copy h1 span{font-size:19px}
+  .lg-card{padding:24px 20px 20px}
+  .lg-foot{padding:14px 16px 18px;flex-direction:column;align-items:flex-start}
+  .lg-foot li{padding:0 12px}
+}
+
+/* shell */
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;background:linear-gradient(135deg,#1a1f74,#3D5AFE)}
+.top #back{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:7px 12px;font-weight:650}
+.top .ttl{flex:1;font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .me{display:flex;align-items:center;gap:8px;font-size:13px}
+.av{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--indigo);display:grid;place-items:center;font-weight:800;font-size:13px}
+.top #logout{border:0;background:none;color:#fff;text-decoration:underline;font-size:13px}
+main{max-width:940px;margin:0 auto;padding:16px 16px 90px}
+.subnav{position:sticky;top:49px;z-index:25;display:flex;gap:4px;overflow-x:auto;padding:0 14px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 6px rgba(20,25,90,.05)}
+.subnav button{border:0;background:none;color:var(--indigo);font-weight:650;font-size:13.5px;padding:12px 14px;border-bottom:2.5px solid transparent;white-space:nowrap}
+.subnav button:hover{background:#F3F5FF}
+.subnav button[aria-current=true]{border-bottom-color:var(--blue);color:var(--blue)}
+.svc-hero{background:linear-gradient(120deg,#0A2E86,#2E86DE);color:#fff;border-radius:20px;padding:26px 24px;margin:14px 0 18px;box-shadow:var(--sh)}
+.svc-hero h2{font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+.svc-hero p{margin:6px 0 0;color:#DCEBFF;font-size:14px}
+.hello-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hello-badge{flex:0 0 auto;width:52px;height:52px;border-radius:50%;background:#EEF1FF;border:1.5px dashed var(--line);display:grid;place-items:center}
+.svc-row{display:grid;gap:14px}
+@media(min-width:700px){.svc-row{grid-template-columns:repeat(3,1fr)}}
+.svc-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--sh);text-align:left;display:flex;flex-direction:column;gap:6px}
+.svc-card:hover{border-color:var(--blue)}
+.svc-ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;margin-bottom:6px}
+.svc-ic.i1{background:#EAEDFF}.svc-ic.i2{background:#FFEDE0}.svc-ic.i3{background:#E1F7F3}
+.svc-card h3{font-size:17px}
+.svc-card p{color:var(--mute);font-size:13.5px;margin:0 0 6px}
+.svc-link{font-size:13.5px;font-weight:750}
+
+/* home */
+.hello{margin:4px 0 16px}
+.hello p{color:var(--mute)}
+.tiles{display:grid;gap:14px}
+.tile{display:flex;align-items:center;gap:16px;border:0;text-align:left;color:#fff;border-radius:22px;padding:20px;box-shadow:var(--sh);position:relative;overflow:hidden;width:100%}
+.tile::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;border:24px solid rgba(255,255,255,.14)}
+.tile .ic{flex:0 0 58px;height:58px;border-radius:18px;background:rgba(255,255,255,.22);display:grid;place-items:center}
+.tile b{display:block;font-size:20px;font-weight:800}
+.tile span{opacity:.92;font-size:14px}
+.t1{background:linear-gradient(135deg,#3D5AFE,#7C4DFF)}
+.t2{background:linear-gradient(135deg,#0BB5A4,#2489f0)}
+.t3{background:linear-gradient(135deg,#FF8A3D,#FF5A5F)}
+
+/* FIR entry */
+.card{background:#fff;border-radius:20px;padding:18px;box-shadow:var(--sh)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;font-size:13px;font-weight:650;color:var(--indigo)}
+.chip[aria-pressed=true]{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* split */
+.fh{background:linear-gradient(135deg,#1F2470,#3D5AFE);color:#fff;border-radius:20px;padding:16px 18px;box-shadow:var(--sh);margin-bottom:14px}
+.fh h2{font-size:24px}
+.fh .m{opacity:.92;font-size:14px;margin-top:4px}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;background:#E6EBFF;color:var(--indigo);margin-right:6px}
+.fh .pill{background:rgba(255,255,255,.22);color:#fff}
+.split{display:grid;gap:14px}
+@media(min-width:760px){.split{grid-template-columns:1fr 1fr}}
+.panel{border-radius:22px;padding:16px;min-height:33vh;box-shadow:var(--sh);cursor:pointer;display:flex;flex-direction:column;border:2px solid transparent}
+.panel:hover{border-color:var(--blue)}
+.panel .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.panel .go{font-size:13px;font-weight:750;color:var(--indigo);background:rgba(255,255,255,.75);border-radius:999px;padding:4px 12px}
+.pl{background:linear-gradient(160deg,#FFF0EF,#FFE0D6)}
+.pn{background:linear-gradient(160deg,#EAEDFF,#DDF6F3)}
+.mini{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.75);border-radius:12px;padding:8px 10px;margin-top:7px}
+.dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px}
+.mini b{flex:1;min-width:0}
+.mini em{font-style:normal;font-weight:800}
+#miniCv{width:100%;flex:1;min-height:210px;display:block;background:rgba(255,255,255,.6);border-radius:14px}
+
+/* leads */
+.sum{font-size:17px;line-height:1.45;margin:10px 0 14px}
+.bio{background:linear-gradient(135deg,#EFE9FF,#E4F0FF);border-radius:16px;padding:12px 14px;margin:10px 0}
+.bio div{padding:6px 0;border-top:1px solid rgba(124,77,255,.2);font-size:14px}
+.bio div:first-of-type{border-top:0}
+.hit{border-top:1px solid var(--line);padding:8px 0;font-size:14px}
+.miss{color:var(--mute)}
+.lh{margin:22px 0 8px;padding:10px 14px;border-radius:14px;color:#fff;background:var(--c)}
+.lh p{margin:2px 0 0;font-size:13px;opacity:.95}
+details.lead{background:#fff;border-radius:16px;margin:9px 0;box-shadow:var(--sh);border-left:6px solid var(--c);overflow:hidden}
+details.lead>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+details.lead>summary::-webkit-details-marker{display:none}
+.who{flex:1;min-width:0}
+.who b{display:block;font-size:16px}
+.who span{display:block;font-size:13px;color:var(--mute)}
+.sc{text-align:right;font-size:26px;font-weight:850;line-height:1}
+.sc small{display:block;font-size:12px;font-weight:750;margin-top:3px}
+.High{color:#C4272F}.Medium{color:#B86E00}.Low{color:var(--mute)}
+.pcin{padding:0 14px 14px}
+.conn{background:#F3F5FF;border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:14px}
+.conn div{padding:3px 0}
+.fchip{display:inline-block;background:var(--indigo);color:#fff;border-radius:6px;padding:0 7px;font-size:12px;font-weight:700;margin:1px 3px 1px 0}
+.tabs{display:flex;gap:6px;margin:8px 0}
+.tabs button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font-size:13px;font-weight:700;color:var(--indigo)}
+.tabs button[aria-selected=true]{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.firc{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px}
+.firc .why{margin-top:6px;font-size:13px;color:var(--mute)}
+.pcin ul{margin:4px 0;padding-left:18px}
+.tg{display:inline-block;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:1px 7px;margin:2px 4px 2px 0}
+.note{border-left:4px solid var(--amber);background:#FFF8E6;border-radius:0 10px 10px 0;padding:9px 12px;font-size:13px;color:#6B4E00;margin:14px 0}
+
+/* network */
+#cvwrap{position:relative;height:min(72vh,640px);background:#fff;border-radius:20px;box-shadow:var(--sh);overflow:hidden}
+#cv{width:100%;height:100%;display:block;touch-action:none}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:19px;font-weight:700;color:var(--indigo)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin:10px 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+
+/* dashboard */
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:760px){.filters{grid-template-columns:repeat(5,1fr)}}
+.filters label{margin:0 0 4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{border-radius:16px;padding:12px;color:#fff}
+.stat b{display:block;font-size:24px;font-weight:850;line-height:1.1}
+.stat span{font-size:12px;opacity:.95}
+.s1{background:linear-gradient(135deg,#3D5AFE,#7C4DFF)}.s2{background:linear-gradient(135deg,#0BB5A4,#2489f0)}.s3{background:linear-gradient(135deg,#FF8A3D,#FF5A5F)}
+.upbtn{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--indigo);background:#fff;color:var(--indigo);border-radius:12px;padding:8px 14px 8px 10px;font-weight:750;font-size:14px;margin:0 0 12px}
+.upbtn:hover{background:var(--indigo);color:#fff}
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0}
+.mapbox{background:#fff;border-radius:20px;box-shadow:var(--sh);padding:12px}
+.mapbox svg{width:100%;height:auto;display:block}
+.tile-st{cursor:pointer;outline:none}
+.tile-st:hover path,.tile-st:hover circle.dot,.tile-st:focus-visible path,.tile-st:focus-visible circle.dot{stroke:#161B3D;stroke-width:1.8}
+.tile-st:focus-visible{outline:none}
+.mapctl{display:flex;gap:8px;align-items:center;margin:0 4px 8px}
+.mapctl button{border:1.5px solid var(--line);background:#fff;color:var(--indigo);border-radius:10px;padding:5px 12px;font-weight:700;font-size:13px}
+.mapctl .hint{margin-left:auto;font-size:12px}
+.mapscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;background:#F6F8FF;max-width:720px;margin:0 auto}
+.mapscroll svg{max-width:none}
+.mt{font-weight:700;fill:#161B3D;paint-order:stroke;stroke:#fff;stroke-width:3.2px;stroke-linejoin:round}
+.mt .mc{font-weight:850}
+.ml{stroke:#161B3D;stroke-width:.9;fill:none;opacity:.75}
+.scale{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin-top:8px}
+.scale i{width:26px;height:10px;border-radius:3px;display:inline-block}
+.bar{display:grid;grid-template-columns:minmax(90px,140px) 1fr 40px;gap:8px;align-items:center;margin:6px 0;font-size:13.5px;width:100%;border:0;background:none;text-align:left;padding:2px 0}
+.bar .t{background:#E3E7FA;height:16px;border-radius:8px;overflow:hidden}
+.bar .t i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--violet))}
+.bar b{text-align:right}
+.trend{display:flex;align-items:flex-end;gap:5px;height:130px;margin-top:8px}
+.trend div{flex:1;text-align:center;font-size:11px;color:var(--mute)}
+.trend i{display:block;border-radius:6px 6px 0 0;margin-bottom:4px;background:linear-gradient(180deg,var(--violet),var(--blue))}
+.trow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.trow small{grid-column:1/3;color:var(--mute)}
+.up{color:#C4272F;font-weight:800}.down{color:#12805C;font-weight:800}.flat{color:var(--mute);font-weight:700}
+.sec{margin-top:16px}
+.sec .card{padding:14px 16px}
+.acts li{margin:4px 0}
+
+/* data */
+.frow{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;background:#fff;border-bottom:1px solid var(--line);padding:10px 4px;font-size:14px}
+.frow b{color:var(--indigo)}
+pre{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;overflow-x:auto;font-size:12px}
+
+/* chat */
+#fab{position:fixed;right:16px;bottom:16px;z-index:40;border:0;border-radius:999px;padding:13px 20px;color:#fff;font-weight:800;background:linear-gradient(135deg,#0BB5A4,#3D5AFE);box-shadow:0 10px 26px rgba(11,181,164,.5)}
+#chat{position:fixed;right:0;bottom:0;z-index:50;width:min(100%,430px);height:76vh;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(20,25,90,.3);display:flex;flex-direction:column}
+#chat .ch{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:22px 22px 0 0;color:#fff;background:linear-gradient(135deg,#0BB5A4,#3D5AFE);font-weight:800}
+#chat .ch button{border:0;background:rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:4px 10px;font-weight:700}
+#msgs{flex:1;overflow-y:auto;padding:12px 14px}
+.msg{max-width:88%;padding:9px 12px;border-radius:14px;margin:7px 0;font-size:14px;line-height:1.45}
+.msg.bot{background:#EEF1FF}
+.msg.me{background:var(--indigo);color:#fff;margin-left:auto}
+.msg ul{margin:4px 0;padding-left:18px}
+#cchips{display:flex;gap:6px;overflow-x:auto;padding:0 12px 6px}
+#cchips button{flex:0 0 auto;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:650;color:var(--indigo)}
+#cform{display:flex;gap:8px;padding:8px 12px 14px}
+#cform button{border:0;border-radius:12px;padding:0 16px;color:#fff;font-weight:750;background:var(--indigo)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:80}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="bg-art" aria-hidden="true">
+  <svg width="420" height="380" viewBox="0 0 420 380" style="left:-40px;top:60px">
+    <g stroke="#9CC2F5" stroke-width="1.4" fill="none">
+      <line x1="70" y1="90" x2="140" y2="50"/><line x1="140" y1="50" x2="210" y2="80"/><line x1="70" y1="90" x2="60" y2="160"/><line x1="70" y1="90" x2="150" y2="140"/><line x1="150" y1="140" x2="210" y2="80"/><line x1="150" y1="140" x2="120" y2="210"/><line x1="60" y1="160" x2="120" y2="210"/><line x1="120" y1="210" x2="190" y2="230"/><line x1="150" y1="140" x2="230" y2="170"/>
+    </g>
+    <g fill="#4C8DFF"><circle cx="140" cy="50" r="7"/><circle cx="210" cy="80" r="6"/><circle cx="60" cy="160" r="6"/><circle cx="120" cy="210" r="6"/><circle cx="190" cy="230" r="6"/><circle cx="230" cy="170" r="6"/></g>
+    <circle cx="70" cy="90" r="16" fill="#2E67D6"/><circle cx="150" cy="140" r="12" fill="#6FA8FF"/>
+  </svg>
+  <svg width="360" height="360" viewBox="0 0 360 360" style="right:-50px;bottom:-30px">
+    <g fill="none" stroke="#A8C6F5" stroke-width="4" stroke-linecap="round">
+      <path d="M180 60a120 120 0 0 1 120 120"/><path d="M180 90a90 90 0 0 1 90 90"/><path d="M180 120a60 60 0 0 1 60 60"/><path d="M180 150a30 30 0 0 1 30 30"/>
+      <path d="M180 60a120 120 0 0 0-120 120"/><path d="M180 90a90 90 0 0 0-90 90"/><path d="M180 120a60 60 0 0 0-60 60"/>
+    </g>
+  </svg>
+  <svg width="300" height="220" viewBox="0 0 300 220" style="right:20px;top:40px">
+    <g stroke="#9CC2F5" stroke-width="1.2" fill="none">
+      <path d="M30 40h60l-10 20h40l20-20h50M30 90h50l15 25h60l20-25h40M40 140h60l10 20h70"/>
+    </g>
+    <g fill="#4C8DFF"><circle cx="90" cy="40" r="3"/><circle cx="150" cy="60" r="3"/><circle cx="80" cy="115" r="3"/><circle cx="220" cy="90" r="3"/><circle cx="100" cy="160" r="3"/></g>
+  </svg>
+</div>
+
+<section id="pg-login" class="page">
+  <header class="lg-top">
+    <div class="lg-brand"><svg width="52" height="58" viewBox="0 0 48 54" aria-hidden="true"><path d="M24 3 42 9v18c0 11-8 19-18 24C14 46 6 38 6 27V9z" fill="rgba(40,80,190,.28)" stroke="#4C8DFF" stroke-width="2.4" stroke-linejoin="round"/><g fill="none" stroke="#A8CFFF" stroke-width="1.5" stroke-linecap="round"><path d="M14 30c0-9 4-15 10-15s10 6 10 15"/><path d="M17.5 32c0-7 2.8-12 6.5-12s6.5 5 6.5 12"/><path d="M21 34c0-5 1.4-8.5 3-8.5s3 3.5 3 8.5"/><path d="M24 30v9"/><path d="M14 35c1 4 3 7 6 9M34 35c-1 4-3 7-6 9"/></g></svg>
+      <div><div class="lg-name">TRACEON</div><div class="lg-tag">Smarter Analysis<i></i>Safer Communities</div></div>
+    </div>
+    <div class="lg-nav">Analyze<i>/</i>Investigate<i>/</i>Solve</div>
+  </header>
+
+  <div class="lg-main">
+    <div class="lg-hero">
+      <svg class="lg-art" viewBox="0 0 720 470" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+<defs>
+<g id="fp" fill="none" stroke-linecap="round"><ellipse rx="14.2" ry="19.6" stroke-dasharray="110 6" transform="rotate(23)"/><ellipse rx="21.4" ry="29.2" stroke-dasharray="40 8 60 5" transform="rotate(46)"/><ellipse rx="28.6" ry="38.8" stroke-dasharray="90 12 18 6" transform="rotate(69)"/><ellipse rx="35.8" ry="48.4" stroke-dasharray="70 9 22 7" transform="rotate(92)"/><ellipse rx="43.0" ry="58.0" stroke-dasharray="110 6" transform="rotate(115)"/><ellipse rx="50.2" ry="67.6" stroke-dasharray="40 8 60 5" transform="rotate(138)"/><ellipse rx="57.4" ry="77.2" stroke-dasharray="90 12 18 6" transform="rotate(161)"/><ellipse rx="64.6" ry="86.8" stroke-dasharray="70 9 22 7" transform="rotate(184)"/><ellipse rx="71.8" ry="96.4" stroke-dasharray="110 6" transform="rotate(207)"/><ellipse rx="79.0" ry="106.0" stroke-dasharray="40 8 60 5" transform="rotate(230)"/><ellipse rx="86.2" ry="115.6" stroke-dasharray="90 12 18 6" transform="rotate(253)"/><ellipse rx="93.4" ry="125.2" stroke-dasharray="70 9 22 7" transform="rotate(276)"/><ellipse rx="100.6" ry="134.8" stroke-dasharray="110 6" transform="rotate(299)"/></g>
+<clipPath id="lensClip"><circle cx="505" cy="195" r="70"/></clipPath>
+<radialGradient id="lensG" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#7DB8FF" stop-opacity=".35"/><stop offset="1" stop-color="#0B1E4A" stop-opacity=".55"/></radialGradient>
+<linearGradient id="fileG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A4A34"/><stop offset="1" stop-color="#4A2A20"/></linearGradient>
+<filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+</defs>
+<!-- background screens -->
+<g opacity=".8"><rect x="330" y="18" width="360" height="250" rx="6" fill="#0B1D45" stroke="#1E3A7A"/>
+<g stroke="#2A4C94" stroke-width="1" opacity=".7"><path d="M345 40h120M345 56h80M345 72h100M600 40h70M600 56h50M600 210h70M600 226h60"/></g>
+<rect x="600" y="80" width="70" height="100" rx="3" fill="#0F2656" stroke="#22417F"/></g>
+<!-- fingerprint + frame -->
+<g stroke="#5AA2FF" stroke-width="2" fill="none" opacity=".9"><path d="M352 60v-18h18M572 42h18v18M590 250v18h-18M370 268h-18v-18" transform="translate(-4 -2)"/></g>
+<g transform="translate(470 155)" stroke="#6DB2FF" stroke-width="1.7" opacity=".95"><use href="#fp" filter="url(#glow)" opacity=".5"/><use href="#fp"/></g>
+<!-- map panel -->
+<g transform="rotate(-6 250 320)"><rect x="150" y="255" width="250" height="150" rx="6" fill="#0C1B40" stroke="#22417F"/>
+<g stroke="#2C4F9C" stroke-width="1" fill="none" opacity=".8"><path d="M160 290l70-20 60 25 90-30M170 340l80-30 70 22 70-20M200 265l20 130M270 262l-10 138M340 265l10 130"/></g>
+<g stroke="#D93B3B" stroke-width="1.4" fill="none" opacity=".85"><path d="M215 330l35-42 55 50 20-50"/></g>
+<g fill="#E5484D"><path d="M250 274a7 7 0 1 1 .1 0l-.1 0 0 0-6-2z" transform="translate(0 0)"/><circle cx="250" cy="287" r="3" fill="#0C1B40"/><path d="M215 320a7 7 0 1 1 .1 0z"/><circle cx="215" cy="327" r="3" fill="#0C1B40"/><path d="M305 332a7 7 0 1 1 .1 0z"/><circle cx="305" cy="339" r="3" fill="#0C1B40"/><path d="M325 290a6 6 0 1 1 .1 0z"/></g></g>
+<!-- photos on the right -->
+<g><g transform="rotate(8 560 340)"><rect x="470" y="290" width="150" height="100" rx="3" fill="#B8BDC8" opacity=".55"/><rect x="478" y="298" width="134" height="84" fill="#20262F" opacity=".85"/><circle cx="545" cy="335" r="14" fill="#5A6270"/><path d="M515 382c4-20 16-26 30-26s26 6 30 26z" fill="#4A5260"/></g>
+<g transform="rotate(-5 640 370)"><rect x="560" y="330" width="140" height="95" rx="3" fill="#C9CDD6" opacity=".4"/><rect x="567" y="337" width="126" height="80" fill="#1B2028" opacity=".85"/></g></g>
+<!-- mugshots on the left -->
+<g opacity=".85"><g transform="rotate(-4 60 300)"><rect x="-10" y="270" width="110" height="100" rx="3" fill="#7A6A5E" opacity=".45"/><rect x="-2" y="278" width="94" height="84" fill="#1B2230"/><circle cx="45" cy="312" r="15" fill="#6A7080"/><path d="M14 362c4-22 16-28 31-28s27 6 31 28z" fill="#39415A"/></g>
+<g transform="rotate(5 130 350)"><rect x="90" y="320" width="90" height="80" rx="3" fill="#7A6A5E" opacity=".4"/><rect x="97" y="327" width="76" height="66" fill="#1B2230"/><circle cx="135" cy="352" r="12" fill="#6A7080"/><path d="M110 393c3-17 13-22 25-22s22 5 25 22z" fill="#39415A"/></g></g>
+<!-- case file -->
+<g transform="rotate(-11 200 430)"><path d="M60 400h120l16-20h150l18 20h60v90H60z" fill="url(#fileG)" opacity=".92"/>
+<text x="120" y="450" font-size="34" font-weight="800" fill="#1E0F0A" opacity=".55" letter-spacing="2" font-family="Arial,sans-serif">CASE FILE</text></g>
+<!-- pen -->
+<path d="M330 385l150 30" stroke="#0A0E18" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+<!-- magnifier -->
+<g><circle cx="505" cy="195" r="70" fill="url(#lensG)"/>
+<g clip-path="url(#lensClip)"><g transform="translate(505 195) scale(1.55)" stroke="#9FD0FF" stroke-width="1.5" opacity=".9"><use href="#fp"/></g></g>
+<circle cx="505" cy="195" r="70" fill="none" stroke="#0A0F1E" stroke-width="13"/><circle cx="505" cy="195" r="76" fill="none" stroke="#2A4B86" stroke-width="1.5" opacity=".8"/>
+<path d="M556 246l90 84" stroke="#0A0F1E" stroke-width="20" stroke-linecap="round"/><path d="M556 246l90 84" stroke="#1B2A4A" stroke-width="3" stroke-linecap="round" opacity=".7"/></g>
+</svg>
+      <div class="lg-copy">
+        <h1>Welcome to <b>TraceOn</b><span>Criminal Analysis &amp; Investigation System</span></h1>
+        <p>A technology-driven platform to analyze crime data, manage cases and support effective investigation.</p>
+      </div>
+    </div>
+
+    <div class="lg-card">
+      <form id="lform" novalidate>
+        <h2>Login</h2>
+        <p class="lg-sub">Access your account to continue</p>
+        <label class="fld"><span class="sr" hidden>User name or email</span><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg><input id="uid" type="text" placeholder="Username / Email ID" aria-label="Username or email ID" autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+        <label class="fld"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg><input id="pw" type="password" placeholder="Password" aria-label="Password" autocomplete="current-password"><button type="button" class="lg-eye" id="showpw" aria-label="Show password"></button></label>
+        <div class="lg-row"><label><input type="checkbox" id="rem" checked> Remember me</label><button type="button" class="lg-link" id="forgot">Forgot password?</button></div>
+        <div class="err" id="lerr" role="alert" hidden></div>
+        <div class="ok" id="lok" role="status" hidden></div>
+        <button class="lg-btn" type="submit"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Login</button>
+        <div class="lg-or">OR</div>
+        <button class="lg-btn ghost" type="button" id="newacct"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 21c0-4 3.5-7 7-7 1.4 0 2.6.4 3.6 1M18 14v6M15 17h6"/></svg>Create new account</button>
+        <button class="lg-btn demo" type="button" id="demologin"><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg>Demo login</button>
+        <p class="lg-note">Only authorized personnel are allowed to access this system. Use Demo login to explore TraceOn with sample data.</p>
+      </form>
+
+      <form id="rform" hidden novalidate>
+        <h2>Create account</h2>
+        <p class="lg-sub">Register to use TraceOn</p>
+        <label class="fld"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg><input id="rname" type="text" placeholder="Full name" aria-label="Full name" autocomplete="name"></label>
+        <label class="fld"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><input id="ruid" type="text" placeholder="Username / Email ID" aria-label="Choose a username or email ID" autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+        <label class="fld"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><input id="rpw" type="password" placeholder="Password (6 or more characters)" aria-label="Password" autocomplete="new-password"></label>
+        <label class="fld"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><input id="rpw2" type="password" placeholder="Confirm password" aria-label="Confirm password" autocomplete="new-password"></label>
+        <div class="err" id="rerr" role="alert" hidden></div>
+        <button class="lg-btn" type="submit"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 21c0-4 3.5-7 7-7 1.4 0 2.6.4 3.6 1M18 14v6M15 17h6"/></svg>Create account</button>
+        <div class="lg-or">OR</div>
+        <button class="lg-btn ghost" type="button" id="backlogin"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Back to login</button>
+        <p class="lg-note">Only authorized personnel are allowed to access this system.</p>
+      </form>
+    </div>
+  </div>
+
+  <footer class="lg-foot">
+    <ul>
+      <li><svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v6c0 4.5 3.2 8 7.5 9 4.3-1 7.5-4.5 7.5-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>Secure</li>
+      <li><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7" ry="2.8"/><path d="M5 5.5v13c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-13M5 12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8"/></svg>Data driven</li>
+      <li><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="8" r="2.4"/><circle cx="8" cy="18" r="2.4"/><circle cx="19" cy="18" r="2.4"/><path d="m8 7 8 .8M7 8.4l1 7.2M10 18h7M18.3 10.3l.5 5.3"/></svg>Better decisions</li>
+    </ul>
+    <div class="sih"><svg viewBox="0 0 24 24"><path d="M6 15c0-5 2.5-9 6-9s6 4 6 9"/><path d="M8.5 16c0-4 1.6-7 3.5-7s3.5 3 3.5 7"/><path d="M11 17c0-3 .5-5 1-5s1 2 1 5"/></svg>SIH Project | 2026</div>
+  </footer>
+</section>
+
+<div id="shell" hidden>
+  <header class="top">
+    <button id="back" hidden>Back</button>
+    <div class="ttl" id="ttl">TraceOn</div>
+    <div class="me"><div class="av" id="av"></div><button id="logout">Sign out</button></div>
+  </header>
+  <nav class="subnav">
+    <button data-go="home">Home</button>
+    <button data-go="about">About</button>
+    <button data-go="feedback">Feedback</button>
+    <button data-go="contact">Contact</button>
+  </nav>
+  <main>
+    <section id="pg-home" hidden>
+      <div class="hello-row">
+        <div class="hello"><h2 id="hi">Welcome</h2><p id="hirole"></p></div>
+      </div>
+      <div class="svc-hero"><h2>Services for police</h2><p>Get started with the main features. TraceOn links FIRs, phones, accounts, vehicles and biometrics across cases so an investigator can see the network behind a crime.</p></div>
+      <div class="svc-row">
+        <button class="svc-card" data-go="fir"><span class="svc-ic i1"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3D5AFE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span><h3>FIR</h3><p>Enter a FIR number to find leads and the network.</p><span class="svc-link" style="color:#3D5AFE">Go to FIR &rarr;</span></button>
+        <button class="svc-card" data-go="dash"><span class="svc-ic i2"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF8A3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><h3>Dashboard</h3><p>View crime trends, hotspots and statistics.</p><span class="svc-link" style="color:#FF8A3D">Open Dashboard &rarr;</span></button>
+        <button class="svc-card" data-go="data"><span class="svc-ic i3"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0BB5A4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span><h3>Data</h3><p>Upload and manage the FIR records used for analysis.</p><span class="svc-link" style="color:#0BB5A4">Open Data &rarr;</span></button>
+      </div>
+    </section>
+
+    <section id="pg-about" hidden>
+      <div class="card">
+        <h2>About TraceOn</h2>
+        <p class="hint" style="margin-top:8px">TraceOn is a criminal network analysis system built to help investigators connect the dots between FIRs, people, phones, accounts, vehicles and biometric evidence.</p>
+        <h4>Why TraceOn</h4>
+        <p>Police stations register a large number of FIRs every year, but the same phone number, vehicle, account or fingerprint can quietly reappear across cases filed months apart and in different stations. Investigated on their own, these cases look unrelated. TraceOn brings the records together and surfaces those shared links automatically.</p>
+        <h4>What it does</h4>
+        <p>Given a FIR number, TraceOn searches past records for people, phones, accounts, vehicles and biometrics that match, then builds a network showing how everyone involved is connected \u2013 directly or through a chain of shared evidence. Matches are ranked into leads, mapped visually, and can be explored with a built-in case assistant.</p>
+        <h4>Crime dashboard</h4>
+        <p>A state, district and police-station level dashboard shows crime trends and hotspots, helping identify where a particular offence is concentrated and rising, in the same spirit as national crime-tracking systems used by police departments today.</p>
+        <h4>A note on the data</h4>
+        <p>This is a prototype. Sample FIRs and matches are used to demonstrate the workflow; every lead it surfaces is meant to be reviewed and confirmed by an investigator, not treated as a finding on its own.</p>
+      </div>
+    </section>
+
+    <section id="pg-feedback" hidden>
+      <div class="card">
+        <h2>Feedback</h2>
+        <p class="hint" style="margin-top:4px">Tell us what's working and what isn't. Feedback submitted here stays on this device \u2013 it is not sent anywhere in this prototype.</p>
+        <form id="fbform">
+          <label for="fbname">Name</label>
+          <input id="fbname" placeholder="Your name">
+          <label for="fbtype">Feedback type</label>
+          <select id="fbtype"><option>Suggestion</option><option>Bug report</option><option>Feature request</option><option>Other</option></select>
+          <label for="fbmsg">Message</label>
+          <textarea id="fbmsg" rows="5" placeholder="Share your feedback" style="width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;resize:vertical"></textarea>
+          <button class="btn wide" type="submit" style="margin-top:14px">Submit feedback</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="pg-contact" hidden>
+      <div class="card">
+        <h2>Contact us</h2>
+        <p class="hint" style="margin-top:4px">Reach the TraceOn programme team.</p>
+        <div class="trow"><b>Programme office</b><span></span><small>TraceOn Analytics Cell, National Crime Records Bureau campus, New Delhi</small></div>
+        <div class="trow"><b>Helpdesk email</b><span></span><small>support@traceon.example.gov.in</small></div>
+        <div class="trow"><b>Helpline</b><span></span><small>1800-000-1090 (toll free, 9 AM \u2013 6 PM)</small></div>
+        <div class="trow"><b>Feedback</b><span></span><small>Use the Feedback page for suggestions and bug reports</small></div>
+        <div class="note">Contact details shown here are placeholders for this prototype.</div>
+      </div>
+    </section>
+
+    <section id="pg-fir" hidden>
+      <div class="card">
+        <h2>Open a registered FIR</h2>
+        <p class="hint" style="margin-top:4px">Only registered FIRs can be opened. The system reads the case details, accused, phones, accounts, vehicles and biometrics already recorded for that FIR.</p>
+        <label for="fno">FIR number</label>
+        <input id="fno" placeholder="FIR-2026-0231" autocapitalize="characters" spellcheck="false">
+        <div class="err" id="ferr" role="alert" hidden></div>
+        <button class="btn wide" id="fgo" style="margin-top:14px">Find leads</button>
+        <h4>Try one of these</h4>
+        <div class="chips" id="fsug"></div>
+      </div>
+    </section>
+
+    <section id="pg-split" hidden></section>
+    <section id="pg-leads" hidden></section>
+
+    <section id="pg-net" hidden>
+      <div class="chips" id="lf" role="group" aria-label="Show layers" style="margin:0 0 10px"></div>
+      <div id="cvwrap"><canvas id="cv"></canvas>
+        <div class="zoom"><button id="zi" aria-label="Zoom in">+</button><button id="zo" aria-label="Zoom out">-</button><button id="zf" aria-label="Fit" style="font-size:12px">Fit</button></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div id="sel"></div>
+    </section>
+
+    <section id="pg-dash" hidden></section>
+
+    <section id="pg-data" hidden>
+      <div class="card">
+        <h2>FIR records</h2>
+        <p class="hint" id="dcount" style="margin-top:4px"></p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+          <label class="btn alt" style="margin:0;display:inline-block">Upload CSV<input id="file" type="file" accept=".csv,text/csv" hidden></label>
+          <button class="btn alt" id="tpl">Download template</button>
+          <button class="btn alt" id="reset">Reset to sample</button>
+        </div>
+        <label for="dq">Search FIRs that have accused or evidence recorded</label>
+        <input id="dq" placeholder="FIR number, crime, station or district">
+        <div id="dlist" style="margin-top:8px"></div>
+        <h4>CSV columns</h4>
+        <pre>fir_no,date,state,district,station,crime_type,sections,status,io_name,io_rank,io_id,io_phone,brief,person,role,role_note,type,value</pre>
+        <p class="hint">One row per fact. A person row records who was in the FIR (roles: accused, suspect, victim, witness). Add the same person again with a type and value for each connection: phone, account, vehicle, address, location, associate, fingerprint or retina. A row with no person attaches the item to the whole FIR. A fingerprint or retina with no person means it was found at the scene.</p>
+        <div class="note">Sample data is made up. Matches are leads for an investigator to review, not findings of guilt.</div>
+      </div>
+    </section>
+  </main>
+
+  <button id="fab" hidden>Ask TraceOn</button>
+  <div id="chat" hidden role="dialog" aria-label="TraceOn assistant">
+    <div class="ch"><span>TraceOn assistant</span><button id="cclose">Close</button></div>
+    <div id="msgs" aria-live="polite"></div>
+    <div id="cchips"></div>
+    <div id="cform"><input id="cin" placeholder="How are two people connected?" aria-label="Your question"><button id="csend">Send</button></div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
+const idn=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const DAY=864e5;
+const isSus=r=>r==='accused'||r==='suspect';
+const isBio=t=>t==='fingerprint'||t==='retina';
+const TL={phone:'Phone',account:'Account',vehicle:'Vehicle',address:'Address',location:'Place',fingerprint:'Fingerprint',retina:'Retina'};
+const lbl=t=>TL[t]||t;
+const IW={account:12,phone:12,vehicle:10,address:8,location:5};
+const LC=['#E5484D','#F59E0B','#0EA5A4','#7C4DFF','#64748B'];
+const lc=l=>LC[Math.min(l,4)];
+const LNAME=['Direct matches','One step away','Two steps away','Three steps away','Four steps away','Five steps away','Six steps away'];
+const LDESC=['Named in this FIR, or matched to it by a phone, account, vehicle, place or biometric','Connected to a direct match through a shared FIR, item or associate','Connected through someone in layer 1','Connected through someone in layer 2','Connected through layer 3','Connected through layer 4','Connected through layer 5'];
+const CRIMES=['Theft','Burglary','Robbery','Assault','Murder','Fraud','Cyber crime','Narcotics','Extortion','Vehicle theft','Crimes against women'];
+const STN=['Civil Lines PS','Kotwali PS','Sadar PS','Market Road PS','Station Road PS','Cyber Crime PS','Model Town PS','Cantonment PS'];
+// code, name, reported crime rate per 100,000 (NCRB 2021, from the map you shared), grid column, grid row, sample districts
+const STD=[
+['JK','Jammu & Kashmir',236,2,0,['Srinagar','Jammu','Anantnag','Baramulla']],
+['LA','Ladakh',188,3,0,['Leh','Kargil']],
+['CH','Chandigarh',247,1,1,['Chandigarh']],
+['PB','Punjab',242,2,1,['Ludhiana','Amritsar','Jalandhar','Patiala']],
+['HP','Himachal Pradesh',254,3,1,['Shimla','Kangra','Mandi','Solan']],
+['UK','Uttarakhand',305,4,1,['Dehradun','Haridwar','Nainital','Udham Singh Nagar']],
+['RJ','Rajasthan',358,1,2,['Jaipur','Jodhpur','Kota','Udaipur','Ajmer']],
+['HR','Haryana',697,2,2,['Gurugram','Faridabad','Hisar','Panipat']],
+['DL','Delhi',1480,3,2,['New Delhi','South Delhi','North Delhi','East Delhi','West Delhi']],
+['UP','Uttar Pradesh',262,4,2,['Lucknow','Kanpur Nagar','Varanasi','Agra','Ghaziabad','Prayagraj']],
+['BR','Bihar',228,5,2,['Patna','Gaya','Muzaffarpur','Bhagalpur']],
+['SK','Sikkim',107,6,2,['Gangtok','Namchi']],
+['AR','Arunachal Pradesh',198,8,2,['Itanagar','Tawang']],
+['GJ','Gujarat',1044,0,3,['Ahmedabad','Surat','Vadodara','Rajkot','Gandhinagar']],
+['MP','Madhya Pradesh',561,2,3,['Bhopal','Indore','Gwalior','Jabalpur','Ujjain']],
+['CG','Chhattisgarh',374,3,3,['Raipur','Bilaspur','Durg','Korba']],
+['JH','Jharkhand',157,4,3,['Ranchi','Dhanbad','Jamshedpur','Bokaro']],
+['WB','West Bengal',185,5,3,['Kolkata','Howrah','Jalpaiguri','North 24 Parganas']],
+['AS','Assam',379,7,3,['Kamrup Metropolitan','Dibrugarh','Jorhat','Cachar']],
+['NL','Nagaland',67,8,3,['Kohima','Dimapur']],
+['DN','Dadra & Nagar Haveli and Daman & Diu',52,1,4,['Daman','Diu','Dadra & Nagar Haveli']],
+['MH','Maharashtra',433,2,4,['Mumbai City','Pune','Thane','Nagpur','Nashik']],
+['TG','Telangana',420,3,4,['Hyderabad','Rangareddy','Warangal','Karimnagar']],
+['OD','Odisha',339,4,4,['Khordha','Cuttack','Ganjam','Sundargarh']],
+['ML','Meghalaya',104,7,4,['East Khasi Hills','West Garo Hills']],
+['MN','Manipur',101,8,4,['Imphal West','Imphal East','Churachandpur']],
+['GA','Goa',192,1,5,['North Goa','South Goa']],
+['KA','Karnataka',244,2,5,['Bengaluru Urban','Mysuru','Belagavi','Dakshina Kannada']],
+['AP','Andhra Pradesh',420,3,5,['Visakhapatnam','Krishna','Guntur','Chittoor']],
+['TR','Tripura',117,7,5,['West Tripura','South Tripura']],
+['MZ','Mizoram',262,8,5,['Aizawl','Lunglei']],
+['LD','Lakshadweep',188,1,6,['Kavaratti','Agatti']],
+['KL','Kerala',1477,2,6,['Thiruvananthapuram','Ernakulam','Kozhikode','Thrissur','Kollam']],
+['TN','Tamil Nadu',989,3,6,['Chennai','Coimbatore','Madurai','Tiruchirappalli','Salem']],
+['PY','Puducherry',290,4,6,['Puducherry','Karaikal']],
+['AN','Andaman & Nicobar',332,6,6,['South Andaman','North and Middle Andaman']]
+];
+const STBYNAME=new Map(STD.map(s=>[s[1],s]));
+const dn=n=>n==='Andaman & Nicobar'?'Andaman & Nicobar Islands':n;
+const USERS={officer01:{pw:'police@123',name:'Insp. Ravi Menon',role:'Inspector, Civil Lines PS'},admin:{pw:'admin@123',name:'Admin User',role:'Administrator'},demo:{pw:'demo@123',name:'Demo User',role:'Demo access \u2013 sample data only'}};
+const INDIA_MAP={"w":569,"h":616,"paths":{"Gujarat":"M34.9,262.3L45.6,256.4L57.3,255.4L68.9,249.6L84.1,252.5L96.7,249.6L105.6,252.5L113.7,254.5L120.8,257.4L125.3,261.3L130.7,267.1L137.8,271.0L143.2,274.9L146.8,282.8L145.0,290.5L139.6,296.4L140.5,303.2L135.1,310.0L131.6,318.8L129.8,324.7L127.1,330.5L125.3,334.4L117.2,335.4L119.0,324.7L115.5,316.9L113.7,306.1L114.6,294.4L109.2,297.4L106.5,305.2L107.4,311.0L100.2,318.8L85.9,325.3L75.2,321.8L66.2,313.9L60.9,307.1L51.9,296.4L51.0,290.9L64.4,290.5L69.8,285.7L72.5,280.8L62.6,283.7L55.5,283.7L48.3,279.8L41.2,273.0L38.5,267.1Z","Rajasthan":"M68.9,249.6L73.4,228.1L68.0,210.6L72.5,191.1L85.9,185.2L102.0,177.4L119.9,164.8L132.5,153.1L140.5,145.3L148.6,148.2L153.0,154.0L161.1,158.9L168.3,165.8L172.7,172.6L173.6,179.4L179.0,185.2L187.9,185.2L197.3,187.6L202.3,191.1L206.7,199.9L210.3,204.8L215.7,210.6L204.1,214.5L193.3,220.3L190.6,231.1L192.4,238.9L186.2,249.6L180.8,256.4L170.0,253.5L159.3,247.6L154.8,252.5L151.3,258.4L148.6,263.2L146.8,269.1L143.2,274.9L137.8,271.0L130.7,267.1L125.3,261.3L120.8,257.4L113.7,254.5L105.6,252.5L96.7,249.6L84.1,252.5Z","Punjab":"M140.5,145.3L139.6,136.5L149.5,125.8L150.4,113.1L158.4,104.3L162.0,95.5L169.2,97.5L170.9,100.4L176.3,108.2L183.5,118.0L188.8,125.2L188.8,127.7L187.9,133.6L182.6,138.4L175.4,145.3L168.3,145.3L157.5,143.3L148.6,148.2Z","Haryana":"M148.6,148.2L157.5,143.3L168.3,145.3L175.4,145.3L182.6,138.4L187.9,133.6L188.8,127.7L188.8,125.2L192.4,129.7L196.9,133.6L203.2,136.5L200.8,143.3L197.8,151.1L196.9,157.9L196.9,164.8L199.6,173.5L200.5,181.3L197.3,187.6L187.9,185.2L179.0,185.2L173.6,179.4L172.7,172.6L168.3,165.8L161.1,158.9L153.0,154.0Z","Himachal Pradesh":"M190.6,82.9L196.9,85.8L205.8,87.8L216.6,92.6L224.6,94.6L228.2,103.3L224.6,110.2L225.5,118.9L218.4,121.9L211.2,124.8L207.6,130.6L203.2,136.5L196.9,133.6L192.4,129.7L188.8,125.2L183.5,118.0L176.3,108.2L170.9,100.4L169.2,97.5L174.5,90.7L181.7,84.8Z","Jammu & Kashmir":"M162.0,95.5L151.3,95.5L145.0,89.7L137.8,85.8L131.6,76.0L131.6,65.3L133.4,53.6L135.1,45.8L139.6,44.8L150.4,46.8L161.1,51.7L166.5,60.5L177.2,68.2L185.3,76.0L190.6,82.9L181.7,84.8L174.5,90.7L169.2,97.5Z","Ladakh":"M135.1,45.8L128.9,35.1L119.9,25.3L112.8,17.5L119.9,9.8L134.2,8.8L148.6,6.8L155.7,8.8L168.3,10.7L180.8,16.6L196.9,27.3L213.0,28.3L229.1,28.3L245.2,33.1L252.4,41.0L251.5,56.5L239.9,76.0L237.2,91.6L224.6,94.6L216.6,92.6L205.8,87.8L196.9,85.8L190.6,82.9L185.3,76.0L177.2,68.2L166.5,60.5L161.1,51.7L150.4,46.8L139.6,44.8Z","Uttarakhand":"M203.2,136.5L206.7,140.4L209.4,145.3L214.8,151.1L221.1,157.0L229.1,162.8L239.9,168.7L248.8,164.8L252.4,158.9L256.0,149.2L263.1,140.4L254.2,133.6L245.2,125.8L236.3,122.8L228.2,121.9L225.5,118.9L218.4,121.9L211.2,124.8L207.6,130.6Z","Uttar Pradesh":"M203.2,136.5L200.8,143.3L197.8,151.1L196.9,157.9L196.9,164.8L199.6,173.5L200.5,181.3L197.3,187.6L202.3,191.1L206.7,199.9L210.3,204.8L215.7,210.6L224.6,212.5L233.6,212.5L229.1,221.3L222.0,226.2L218.4,232.0L217.5,241.8L213.9,251.5L222.0,249.6L229.1,242.8L238.1,241.8L250.6,241.8L260.4,243.8L273.9,243.8L283.7,244.7L292.7,255.4L302.5,262.3L313.2,261.3L315.9,251.5L311.5,239.8L316.8,230.1L320.4,222.3L321.3,211.6L318.6,202.8L317.7,196.0L316.8,195.0L309.7,194.0L302.5,196.0L295.3,193.0L284.6,187.2L275.7,183.3L268.5,176.5L257.8,171.6L248.8,164.8L239.9,168.7L229.1,162.8L221.1,157.0L214.8,151.1L209.4,145.3L206.7,140.4Z","Bihar":"M317.7,196.0L324.0,194.0L333.8,202.8L343.7,207.7L354.4,209.6L370.5,213.5L377.7,214.5L391.1,212.5L393.8,220.3L391.1,229.1L387.5,235.9L382.2,237.9L374.1,244.7L365.2,247.6L356.2,249.6L347.3,248.6L336.5,250.6L327.6,252.5L320.4,254.5L315.9,251.5L311.5,239.8L316.8,230.1L320.4,222.3L321.3,211.6L318.6,202.8Z","Jharkhand":"M315.9,251.5L313.2,261.3L310.6,269.1L316.8,274.9L322.2,281.8L322.2,290.5L329.4,293.5L339.2,297.4L347.3,298.3L354.4,296.4L363.4,292.5L367.8,282.8L365.2,273.0L369.6,266.2L377.7,259.3L385.7,251.5L388.4,243.8L387.5,235.9L382.2,237.9L374.1,244.7L365.2,247.6L356.2,249.6L347.3,248.6L336.5,250.6L327.6,252.5L320.4,254.5Z","West Bengal":"M391.1,212.5L393.8,220.3L391.1,229.1L387.5,235.9L388.4,243.8L385.7,251.5L377.7,259.3L369.6,266.2L365.2,273.0L367.8,282.8L363.4,292.5L366.9,298.3L372.3,302.2L377.7,305.2L380.4,309.1L386.6,307.1L391.1,307.1L396.5,307.1L403.6,308.1L408.7,307.1L409.0,297.4L403.6,287.6L405.4,278.8L401.0,271.0L399.2,263.2L395.6,255.4L392.0,249.6L392.9,241.8L399.2,236.9L407.2,235.9L401.0,232.0L397.4,223.3L397.4,218.4L397.4,212.5L402.7,213.5L409.0,215.5L415.3,220.3L417.1,223.3L423.3,222.3L423.3,215.5L423.3,208.6L415.3,207.1L408.1,205.7L407.2,201.8L405.4,196.9L403.6,198.9L400.1,200.8L395.6,200.8L391.1,199.9L389.9,204.8Z","Sikkim":"M391.1,199.9L395.6,200.8L400.1,200.8L403.6,198.9L405.4,196.9L406.7,191.1L405.4,183.3L401.0,181.0L395.6,183.3L392.9,187.2L392.0,194.0Z","Assam":"M423.3,222.3L423.3,215.5L423.3,208.6L433.2,205.7L443.9,205.7L454.7,205.7L463.6,204.8L474.3,205.7L485.1,203.8L494.0,201.8L503.0,196.9L513.7,194.0L522.7,191.1L528.9,194.0L530.7,198.9L528.0,201.8L523.6,202.8L516.4,205.7L510.1,210.6L504.8,216.4L499.4,221.3L494.0,226.2L489.6,230.1L486.9,233.0L486.0,241.8L483.3,247.6L479.7,253.5L477.9,253.5L475.4,251.5L472.6,254.5L469.3,256.4L467.2,256.4L465.4,253.5L461.8,246.7L461.8,238.9L464.5,237.9L470.8,235.0L470.8,228.1L467.2,223.3L460.0,220.3L447.5,223.3L436.8,222.3L428.7,225.2L423.3,232.0L422.4,227.2Z","Meghalaya":"M423.3,232.0L428.7,225.2L436.8,222.3L447.5,223.3L460.0,220.3L467.2,223.3L470.8,228.1L470.8,235.0L464.5,237.9L461.8,238.9L452.9,238.9L442.1,237.9L433.2,238.9L427.8,237.9L423.3,235.0Z","Arunachal Pradesh":"M463.6,204.8L474.3,205.7L485.1,203.8L494.0,201.8L503.0,196.9L513.7,194.0L522.7,191.1L528.9,194.0L530.7,198.9L528.0,201.8L523.6,202.8L527.2,203.8L537.0,200.8L544.2,196.9L551.3,191.1L556.7,183.3L558.5,179.4L549.5,176.5L542.4,173.5L540.6,164.8L537.0,157.0L528.0,157.9L515.5,157.9L506.6,163.8L495.8,170.6L483.3,170.6L474.3,175.5L463.6,179.4L454.7,188.2L453.8,194.0L457.3,200.8Z","Nagaland":"M523.6,202.8L520.9,208.6L518.2,215.5L514.6,220.3L512.8,226.2L510.1,234.0L504.8,232.0L499.4,231.1L494.0,232.0L489.6,233.0L486.9,233.0L489.6,230.1L494.0,226.2L499.4,221.3L504.8,216.4L510.1,210.6L516.4,205.7Z","Manipur":"M486.9,233.0L486.0,241.8L483.3,247.6L479.7,253.5L483.3,256.4L485.1,260.3L488.7,262.3L494.9,261.3L499.4,255.4L503.0,253.5L507.5,249.6L508.4,241.8L510.1,234.0L504.8,232.0L499.4,231.1L494.0,232.0L489.6,233.0Z","Mizoram":"M479.7,253.5L483.3,256.4L485.1,260.3L486.9,267.1L485.1,276.9L483.3,282.8L482.4,290.5L480.6,296.4L476.1,300.3L472.6,300.7L470.8,290.5L468.1,283.7L466.3,279.8L467.2,271.0L467.5,263.2L467.2,256.4L469.3,256.4L472.6,254.5L475.4,251.5L477.9,253.5Z","Tripura":"M467.2,256.4L465.4,253.5L460.9,252.5L457.3,250.6L452.0,255.4L448.4,261.3L447.5,269.1L450.2,275.9L456.4,280.8L462.7,277.9L466.3,279.8L467.2,271.0L467.5,263.2Z","Odisha":"M363.4,292.5L354.4,296.4L347.3,298.3L339.2,297.4L329.4,293.5L322.2,290.5L315.0,296.4L309.7,304.2L307.0,313.0L298.9,319.8L291.8,323.7L286.4,330.5L286.4,339.3L288.2,347.1L284.6,354.9L281.9,362.7L280.1,370.5L278.3,376.3L288.2,374.4L295.3,369.5L304.3,363.7L313.2,359.8L320.4,358.8L325.8,359.8L330.3,355.9L337.4,351.0L344.6,344.2L352.6,342.2L359.8,337.3L366.9,331.5L372.3,323.7L373.2,315.9L376.8,310.0L380.4,309.1L377.7,305.2L372.3,302.2L366.9,298.3Z","Chhattisgarh":"M302.5,262.3L313.2,261.3L310.6,269.1L316.8,274.9L322.2,281.8L322.2,290.5L315.0,296.4L309.7,304.2L307.0,313.0L298.9,319.8L291.8,323.7L286.4,330.5L286.4,339.3L288.2,347.1L284.6,354.9L281.9,362.7L280.1,370.5L278.3,376.3L272.1,381.2L264.0,376.3L257.8,368.5L251.5,361.7L252.4,352.9L255.1,343.2L256.9,331.5L260.4,322.7L263.1,316.9L260.4,313.9L266.7,305.2L272.1,294.4L275.7,285.7L282.8,280.8L290.0,269.1L297.1,263.2Z","Madhya Pradesh":"M215.7,210.6L204.1,214.5L193.3,220.3L190.6,231.1L192.4,238.9L186.2,249.6L180.8,256.4L170.0,253.5L159.3,247.6L154.8,252.5L151.3,258.4L148.6,263.2L146.8,269.1L143.2,274.9L146.8,282.8L145.0,290.5L139.6,296.4L140.5,303.2L148.6,305.2L157.5,306.1L164.7,309.1L172.7,313.9L179.0,313.0L187.9,312.0L196.9,311.0L207.6,309.1L218.4,308.1L229.1,305.2L239.9,307.1L252.4,309.1L260.4,313.9L266.7,305.2L272.1,294.4L275.7,285.7L282.8,280.8L290.0,269.1L297.1,263.2L302.5,262.3L292.7,255.4L283.7,244.7L273.9,243.8L260.4,243.8L250.6,241.8L238.1,241.8L229.1,242.8L222.0,249.6L213.9,251.5L217.5,241.8L218.4,232.0L222.0,226.2L229.1,221.3L233.6,212.5L224.6,212.5Z","Maharashtra":"M117.2,335.4L125.3,334.4L127.1,330.5L129.8,324.7L131.6,318.8L135.1,310.0L140.5,303.2L148.6,305.2L157.5,306.1L164.7,309.1L172.7,313.9L179.0,313.0L187.9,312.0L196.9,311.0L207.6,309.1L218.4,308.1L229.1,305.2L239.9,307.1L252.4,309.1L260.4,313.9L263.1,316.9L260.4,322.7L256.9,331.5L255.1,343.2L252.4,352.9L251.5,361.7L246.1,359.8L239.9,354.9L234.5,348.1L228.2,342.2L221.1,340.3L216.6,344.2L215.7,351.0L209.4,356.8L204.1,361.7L200.5,370.5L199.6,378.3L191.5,376.3L187.9,380.2L180.8,386.1L173.6,391.9L168.3,397.8L162.9,405.6L158.4,411.4L150.4,415.3L145.9,419.2L142.3,422.2L137.8,422.2L133.9,422.6L129.8,415.3L127.1,407.5L126.2,397.8L123.5,386.1L120.8,374.4L119.0,364.6L118.1,354.9L116.3,345.1Z","Goa":"M142.3,422.2L137.8,422.2L133.9,422.6L136.0,429.0L138.7,435.8L140.5,438.8L143.2,437.2L145.0,432.9L145.9,426.1Z","Karnataka":"M140.5,438.8L143.2,437.2L145.0,432.9L145.9,426.1L142.3,422.2L145.9,419.2L150.4,415.3L158.4,411.4L162.9,405.6L168.3,397.8L173.6,391.9L180.8,386.1L187.9,380.2L191.5,376.3L199.6,378.3L203.2,384.1L199.6,391.9L198.7,399.8L201.4,407.5L204.1,412.4L205.8,416.3L204.1,425.1L199.6,430.9L200.5,437.8L203.2,443.6L206.7,451.4L210.3,458.2L213.0,464.1L216.6,469.9L218.4,474.8L217.5,478.7L210.3,479.7L207.6,485.5L208.5,493.3L204.1,496.3L198.7,498.2L191.5,498.2L186.2,500.2L182.6,502.1L177.2,500.2L174.5,495.3L170.9,490.4L168.3,485.5L163.8,483.6L160.2,481.6L157.5,480.7L154.8,479.7L153.9,473.8L151.8,466.0L149.5,457.3L147.7,450.8L145.3,445.6L141.4,440.7Z","Telangana":"M251.5,361.7L246.1,359.8L239.9,354.9L234.5,348.1L228.2,342.2L221.1,340.3L216.6,344.2L215.7,351.0L209.4,356.8L204.1,361.7L200.5,370.5L199.6,378.3L203.2,384.1L199.6,391.9L198.7,399.8L201.4,407.5L204.1,412.4L205.8,416.3L212.1,415.3L222.0,415.3L229.1,409.5L238.1,404.6L245.2,399.8L253.3,394.9L259.5,388.0L264.9,386.1L272.1,381.2L264.0,376.3L257.8,368.5Z","Andhra Pradesh":"M205.8,416.3L212.1,415.3L222.0,415.3L229.1,409.5L238.1,404.6L245.2,399.8L253.3,394.9L259.5,388.0L264.9,386.1L272.1,381.2L278.3,376.3L288.2,374.4L295.3,369.5L304.3,363.7L313.2,359.8L320.4,358.8L325.8,359.8L330.3,355.9L324.0,367.6L316.8,374.4L307.9,381.2L298.9,390.0L287.3,398.8L282.8,406.6L277.4,409.5L267.6,413.4L261.3,421.2L254.2,423.1L247.9,427.0L247.0,438.8L247.9,448.5L251.5,461.2L252.0,464.9L248.5,466.2L246.1,468.8L241.6,469.9L237.2,469.4L234.1,473.5L229.1,474.8L223.7,477.8L217.5,478.7L218.4,474.8L216.6,469.9L213.0,464.1L210.3,458.2L206.7,451.4L203.2,443.6L200.5,437.8L199.6,430.9L204.1,425.1Z","Tamil Nadu":"M217.5,478.7L210.3,479.7L207.6,485.5L208.5,493.3L204.1,496.3L198.7,498.2L191.5,498.2L186.2,500.2L182.6,502.1L179.5,504.5L183.7,507.2L184.7,509.5L183.3,510.9L186.7,511.1L187.9,510.1L187.8,511.5L188.8,513.2L187.2,516.0L190.3,517.3L191.5,519.1L190.5,522.6L190.1,526.1L190.3,527.7L191.5,529.2L193.0,530.0L194.2,529.2L194.9,528.3L196.5,527.3L198.5,529.8L198.2,532.0L198.0,533.7L197.1,536.6L197.8,538.2L196.4,541.9L198.2,542.7L199.0,542.1L200.5,543.5L201.9,542.9L202.3,546.0L200.5,549.9L198.7,553.8L197.8,555.8L196.9,559.6L198.7,562.6L196.0,565.5L194.2,566.9L198.7,571.3L203.2,571.7L209.4,569.4L213.0,563.5L214.8,557.7L218.4,551.8L225.5,548.9L231.8,547.9L229.1,542.1L229.1,537.2L234.5,534.3L238.1,528.4L244.3,528.4L244.3,518.7L244.3,511.9L242.9,505.0L242.9,500.2L244.3,491.4L250.6,483.6L252.0,473.8L252.7,469.9L252.0,464.9L248.5,466.2L246.1,468.8L241.6,469.9L237.2,469.4L234.1,473.5L229.1,474.8L223.7,477.8Z","Kerala":"M182.6,502.1L177.2,500.2L174.5,495.3L170.9,490.4L168.3,485.5L163.8,483.6L160.2,481.6L157.5,480.7L154.8,479.7L156.6,486.5L161.1,495.3L166.5,502.1L171.8,510.9L174.5,519.7L178.1,528.4L179.9,535.3L181.7,544.0L184.4,552.8L187.9,558.7L192.4,564.5L194.2,566.9L196.0,565.5L198.7,562.6L196.9,559.6L197.8,555.8L198.7,553.8L200.5,549.9L202.3,546.0L201.9,542.9L200.5,543.5L199.0,542.1L198.2,542.7L196.4,541.9L197.8,538.2L197.1,536.6L198.0,533.7L198.2,532.0L198.5,529.8L196.5,527.3L194.9,528.3L194.2,529.2L193.0,530.0L191.5,529.2L190.3,527.7L190.1,526.1L190.5,522.6L191.5,519.1L190.3,517.3L187.2,516.0L188.8,513.2L187.8,511.5L187.9,510.1L186.7,511.1L183.3,510.9L184.7,509.5L183.7,507.2L179.5,504.5Z","Delhi":"M190.6,170.6L193.3,166.3L196.9,166.3L199.6,170.6L199.2,175.5L196.0,175.5L190.6,173.5Z","Chandigarh":"M187.8,131.4L190.6,131.4L190.8,128.9L187.9,128.7Z","Dadra & Nagar Haveli and Daman & Diu":"M118.5,332.5L119.9,332.5L119.9,329.9L118.5,329.9ZM120.5,337.7L125.3,337.7L125.3,331.9L120.5,331.9ZM83.2,326.0L86.8,326.0L86.8,324.5L83.2,324.5Z","Puducherry":"M242.5,498.2L244.5,498.2L244.5,494.9L242.5,494.9ZM242.5,517.7L244.5,517.7L244.5,514.4L242.5,514.4ZM166.5,501.9L167.9,501.9L167.9,500.4L166.5,500.4ZM285.5,404.0L287.5,404.0L287.5,402.1L285.5,402.1Z","Lakshadweep":"M104.9,519.7L109.2,519.7L109.2,515.8L104.9,515.8ZM112.9,525.1L117.2,525.1L117.2,521.2L112.9,521.2ZM114.7,514.4L119.0,514.4L119.0,510.5L114.7,510.5ZM131.7,520.3L136.0,520.3L136.0,516.4L131.7,516.4ZM131.2,534.9L135.5,534.9L135.5,531.0L131.2,531.0ZM120.1,569.8L124.4,569.8L124.4,565.9L120.1,565.9Z","Andaman & Nicobar":"M477.0,467.0L479.7,468.0L480.6,477.8L478.8,484.6L477.0,483.6L477.0,475.8ZM473.5,487.5L477.0,488.5L477.9,503.1L475.2,504.1L474.3,497.2ZM470.8,517.7L473.5,517.7L473.5,523.6L470.8,523.6ZM474.3,548.9L477.0,548.9L477.0,551.8L474.3,551.8ZM487.8,571.3L492.2,571.3L492.2,575.2L487.8,575.2ZM493.1,588.9L496.7,590.8L495.8,596.7L492.2,596.7L492.2,591.8Z"},"dots":{"Delhi":[[195.1,170.6,4.6]],"Chandigarh":[[189.2,130.1,3.6]],"Puducherry":[[243.4,496.7,3.4],[243.4,516.2,3.4],[167.2,501.1,3.0],[286.4,403.1,3.0]],"Dadra & Nagar Haveli and Daman & Diu":[[119.2,331.1,3.2],[122.8,334.8,3.8],[85.0,325.3,3.0]],"Lakshadweep":[[107.0,517.7,2.8],[115.1,523.2,2.8],[116.9,512.5,2.8],[133.9,518.3,2.8],[133.4,532.9,2.8],[122.3,567.8,2.8]]},"hits":{"Andaman & Nicobar":[[476.1,487.5,15],[486.9,569.4,18]],"Goa":[[139.6,430.0,9]]},"labels":[{"k":"Rajasthan","l":["Rajasthan"],"x":143.2,"y":216.4,"a":"middle","f":12.5,"t":null,"i":false},{"k":"Gujarat","l":["Gujarat"],"x":106.5,"y":282.8,"a":"middle","f":12,"t":null,"i":false},{"k":"Madhya Pradesh","l":["Madhya","Pradesh"],"x":211.2,"y":263.2,"a":"middle","f":12.5,"t":null,"i":false},{"k":"Uttar Pradesh","l":["Uttar Pradesh"],"x":261.3,"y":204.8,"a":"middle","f":12.5,"t":null,"i":false},{"k":"Bihar","l":["Bihar"],"x":345.5,"y":227.2,"a":"middle","f":12,"t":null,"i":false},{"k":"Jharkhand","l":["Jharkhand"],"x":340.1,"y":270.1,"a":"middle","f":11.5,"t":null,"i":false},{"k":"West Bengal","l":["West","Bengal"],"x":384.8,"y":266.2,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Odisha","l":["Odisha"],"x":324.0,"y":325.6,"a":"middle","f":12.5,"t":null,"i":false},{"k":"Chhattisgarh","l":["Chhattisgarh"],"x":282.8,"y":308.1,"a":"middle","f":10.5,"t":null,"i":false},{"k":"Maharashtra","l":["Maharashtra"],"x":186.2,"y":345.1,"a":"middle","f":12.5,"t":null,"i":false},{"k":"Telangana","l":["Telangana"],"x":229.1,"y":384.1,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Andhra Pradesh","l":["Andhra","Pradesh"],"x":233.6,"y":425.1,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Karnataka","l":["Karnataka"],"x":175.4,"y":444.6,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Tamil Nadu","l":["Tamil","Nadu"],"x":216.6,"y":514.8,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Kerala","l":["Kerala"],"x":170.0,"y":547.9,"a":"end","f":11.5,"t":[188.8,540.1],"i":false},{"k":"Goa","l":["Goa"],"x":119.9,"y":429.0,"a":"end","f":11,"t":[139.6,429.0],"i":false},{"k":"Lakshadweep","l":["Lakshadweep"],"x":64.4,"y":520.6,"a":"middle","f":11,"t":[107.4,520.6],"i":false},{"k":"Dadra & Nagar Haveli and Daman & Diu","l":["Dadra & Nagar","Haveli and","Daman & Diu"],"x":94.9,"y":358.8,"a":"end","f":10.5,"t":[120.8,334.4],"i":false},{"k":"Delhi","l":["Delhi"],"x":114.6,"y":169.6,"a":"end","f":11,"t":[195.1,170.6],"i":false},{"k":"Chandigarh","l":["Chandigarh"],"x":114.6,"y":140.4,"a":"end","f":11,"t":[189.2,130.1],"i":false},{"k":"Punjab","l":["Punjab"],"x":161.1,"y":117.0,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Haryana","l":["Haryana"],"x":175.4,"y":154.0,"a":"middle","f":11,"t":null,"i":false},{"k":"Himachal Pradesh","l":["Himachal","Pradesh"],"x":199.6,"y":106.3,"a":"middle","f":10.5,"t":null,"i":false},{"k":"Uttarakhand","l":["Uttarakhand"],"x":234.5,"y":145.3,"a":"middle","f":10.5,"t":null,"i":false},{"k":"Jammu & Kashmir","l":["Jammu &","Kashmir"],"x":157.5,"y":67.3,"a":"middle","f":11,"t":null,"i":false},{"k":"Ladakh","l":["Ladakh"],"x":209.4,"y":46.8,"a":"middle","f":12,"t":null,"i":false},{"k":"Arunachal Pradesh","l":["Arunachal","Pradesh"],"x":501.2,"y":181.3,"a":"middle","f":11.5,"t":null,"i":false},{"k":"Assam","l":["Assam"],"x":461.8,"y":213.5,"a":"middle","f":11.5,"t":null,"i":true},{"k":"Meghalaya","l":["Meghalaya"],"x":436.8,"y":254.5,"a":"middle","f":11,"t":[438.5,233.0],"i":false},{"k":"Nagaland","l":["Nagaland"],"x":535.2,"y":214.5,"a":"start","f":11,"t":[508.4,218.4],"i":false},{"k":"Manipur","l":["Manipur"],"x":522.7,"y":251.5,"a":"start","f":11,"t":[495.8,247.6],"i":false},{"k":"Mizoram","l":["Mizoram"],"x":503.0,"y":286.6,"a":"start","f":11,"t":[477.9,276.9],"i":false},{"k":"Tripura","l":["Tripura"],"x":440.3,"y":296.4,"a":"middle","f":11,"t":[452.9,269.1],"i":false},{"k":"Sikkim","l":["Sikkim"],"x":424.2,"y":167.7,"a":"middle","f":11,"t":[401.0,191.1],"i":false},{"k":"Puducherry","l":["Puducherry"],"x":275.7,"y":501.1,"a":"start","f":11,"t":[243.4,496.7],"i":false},{"k":"Andaman & Nicobar","l":["Andaman &","Nicobar Islands"],"x":454.7,"y":528.4,"a":"end","f":11,"t":[475.2,508.9],"i":false}]};
+const S={user:null,page:'login',records:[],firNo:'',res:null,sel:null,maxLayer:99,view:{x:0,y:0,k:1},tabs:{},chat:[],
+  dash:{crime:'',period:'12',state:'',district:'',station:''},_db:null,_reg:null};
+
+/* ================= sample data ================= */
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function pick(w,rnd){let s=0;for(const x of w)s+=x;let r=rnd()*s;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return w.length-1}
+function castRows(R){
+  const fir=(no,date,district,station,crime,sections,status,io,brief,people,items,scene)=>{
+    const base={fir_no:no,date,state:'Maharashtra',district,station,crime_type:crime,sections,status,io_name:io[0],io_rank:io[1],io_id:io[2],io_phone:io[3],brief};
+    people.forEach(p=>{
+      const role=p.r||'accused',pb={...base,person:p.n,role,role_note:p.note||''};
+      R.push(pb);(p.l||[]).forEach(l=>R.push({...pb,type:l[0],value:l[1]}));
+    });
+    (items||[]).forEach(l=>R.push({...base,type:l[0],value:l[1]}));
+    (scene||[]).forEach(l=>R.push({...base,type:l[0],value:l[1]}));
+  };
+  const A=['Sunil Deshmukh','Inspector','PN-2231','020-5550-0142'],B=['Meena Kulkarni','Sub-Inspector','TH-1187','022-5550-0118'],C=['Rajesh Naik','Inspector','MB-3320','022-5550-0231'],D=['Anjali Rao','Inspector','MB-2984','022-5550-0377'],E=['Farooq Sheikh','Inspector','NG-4410','0712-555-0190'],F=['Pooja Wankhede','Sub-Inspector','NG-5120','0712-555-0164'],G=['Prakash More','Assistant Inspector','NS-3105','0253-555-0122'];
+  fir('FIR-2025-014','2025-01-12','Pune','Civil Lines PS','Fraud','BNS 318(4), 336(3)','Chargesheet filed',A,'Fake loan-processing office collected fees from applicants and moved the money through mule accounts.',[
+    {n:'Rahul Verma',note:'Ran the fake loan office and collected the fees.',l:[['phone','98100-11122'],['account','ACC-4410'],['location','Warehouse 12'],['associate','Sanjay Mehta'],['fingerprint','FP-2001'],['retina','RT-2001']]},
+    {n:'Sanjay Mehta',note:'Moved the collected money through personal accounts.',l:[['location','Warehouse 12'],['fingerprint','FP-2002']]}]);
+  fir('FIR-2025-031','2025-02-18','Thane','Station Road PS','Extortion','BNS 308(2), 351','Chargesheet filed',B,'Shopkeepers near the railway station were threatened and made to pay protection money.',[
+    {n:'Vikram Rao',note:'Led the collection of protection money.',l:[['location','Cafe Lotus'],['account','ACC-7781'],['fingerprint','FP-2003'],['retina','RT-2003']]},
+    {n:'Kiran Das',note:'Delivered threats and collected cash.',l:[['location','Cafe Lotus'],['location','Warehouse 12'],['vehicle','MH14-KL-2208'],['fingerprint','FP-2004'],['retina','RT-5540']]}]);
+  fir('FIR-2025-052','2025-04-03','Mumbai City','Market Road PS','Fraud','BNS 318(4), 61(2)','Under investigation',C,'Online investment fraud. Victims paid into an account that was emptied within hours.',[
+    {n:'Sanjay Mehta',note:'Collected cash using a vehicle.',l:[['vehicle','MH12-AB-4471']]},
+    {n:'Deepa Nair',note:'Held the receiving account.',l:[['account','ACC-9032'],['location','Hotel Regent'],['fingerprint','FP-1042'],['retina','RT-2005']]},
+    {n:'Neha Gupta',r:'victim'}]);
+  fir('FIR-2025-077','2025-06-20','Mumbai City','Cyber Crime PS','Fraud','BNS 318(4); IT Act 66D','Chargesheet filed',D,'Phishing links used to drain savings accounts. Money was routed through a second account.',[
+    {n:'Imran Sheikh',note:'Withdrew money and passed it on.',l:[['account','ACC-9032'],['location','Hotel Regent'],['vehicle','MH14-KL-2208'],['fingerprint','FP-2007'],['retina','RT-2007']]},
+    {n:'Farhan Ali',note:'Ran the phishing messages from one phone.',l:[['phone','98202-33445'],['fingerprint','FP-2008']]}]);
+  fir('FIR-2025-090','2025-07-09','Thane','Station Road PS','Extortion','BNS 308(2)','Under investigation',B,'Second extortion complaint from the same market. A fingerprint was lifted from the counter at the scene.',[
+    {n:'Anil Kapoor',r:'suspect',note:'Suspected of handling the payments.',l:[['account','ACC-7781'],['phone','SIM-55021'],['fingerprint','FP-2009']]},
+    {n:'Sunita Rao',note:'Used the same SIM to make the threat calls.',l:[['phone','SIM-55021'],['fingerprint','FP-2010']]}],null,[['fingerprint','FP-3307']]);
+  fir('FIR-2025-103','2025-08-14','Nagpur','Kotwali PS','Narcotics','NDPS Act 21(b)','Trial',E,'Packets recovered from a hotel room. A fingerprint on the packaging was never identified.',[
+    {n:'Ravi Kulkarni',note:'Found with the packets.',l:[['location','Hotel Regent'],['phone','98202-33445'],['fingerprint','FP-2011'],['retina','RT-2011']]},
+    {n:'Meera Joshi',note:'Arranged the delivery.',l:[['fingerprint','FP-2012']]}],null,[['fingerprint','FP-1042']]);
+  fir('FIR-2025-118','2025-09-01','Nagpur','Kotwali PS','Theft','BNS 303(2)','Chargesheet filed',F,'Theft from a warehouse. Accused was seen with a known associate.',[
+    {n:'Tarun Bose',note:'Took the goods from the warehouse.',l:[['associate','Meera Joshi'],['fingerprint','FP-2013']]}]);
+  fir('FIR-2025-121','2025-09-10','Nashik','Sadar PS','Theft','BNS 303(2)','Under investigation',G,'Shop theft. Money from the sale was sent to an account already seen in another case.',[
+    {n:'Gopal Nanda',note:'Sold the stolen goods.'},
+    {n:'Hema Pillai',note:'Received the payment.',l:[['account','ACC-4410']]}]);
+  fir('FIR-2026-0231','2026-09-18','Pune','Civil Lines PS','Fraud','BNS 318(4), 319(2)','Under investigation',['Vandana Pawar','Inspector','PN-2954','020-5550-0261'],'Fake job-offer scam. The victim paid a registration fee into a bank account, and cash was collected in a car.',[
+    {n:'Deepa Nair',note:'Accused of receiving the victim\'s payment.',l:[['fingerprint','FP-1042'],['retina','RT-2005']]},
+    {n:'Arjun Patel',note:'Accused of collecting cash from the victim.',l:[['fingerprint','FP-3307'],['retina','RT-5540']]},
+    {n:'Pooja Iyer',r:'victim'}],[['account','ACC-7781'],['phone','98202-33445'],['vehicle','MH12-XY-9090']]);
+}
+function filler(R){
+  const rnd=rng(11),end=new Date('2026-09-20').getTime();
+  const base=[.2,.07,.05,.1,.02,.12,.09,.06,.03,.1,.16];
+  let seq=1;
+  STD.forEach(([code,name,rate,,,dists])=>{
+    const N=Math.round(rate/3),sw=base.map(b=>b*(.5+rnd()*1.5)),dw=dists.map((_,i)=>1/(i+.6)),stn={};
+    dists.forEach(d=>{const k=3+Math.floor(rnd()*3);stn[d]=[...STN].sort(()=>rnd()-.5).slice(0,k)});
+    for(let i=0;i<N;i++){
+      const d=dists[pick(dw,rnd)];
+      const c=CRIMES[pick(CRIMES.map((c,ci)=>sw[ci]*(hash(d+c)%5===0?2.2:1)),rnd)];
+      const arr=stn[d],st=arr[pick(arr.map((_,j)=>1/(j+.7)),rnd)];
+      let u=rnd();const h=hash(d+c+'t')%6;
+      if(h===0)u=u*u;else if(h===1)u=1-(1-u)*(1-u);
+      const date=new Date(end-u*365*DAY).toISOString().slice(0,10);
+      R.push({fir_no:code+'-'+date.slice(0,4)+'-'+(1000+seq++),date,state:name,district:d,station:st,crime_type:c});
+    }
+  });
+}
+function sampleRecords(){const R=[];castRows(R);filler(R);return R}
+const TEMPLATE_COLS=['fir_no','date','state','district','station','crime_type','sections','status','io_name','io_rank','io_id','io_phone','brief','person','role','role_note','type','value'];
+
+/* ================= csv ================= */
+function parseCSV(t){
+  const rows=[];let r=[],c='',q=false;
+  for(let i=0;i<t.length;i++){
+    const ch=t[i];
+    if(q){if(ch==='"'){if(t[i+1]==='"'){c+='"';i++}else q=false}else c+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===','){r.push(c);c=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&t[i+1]==='\n')i++;r.push(c);c='';if(r.some(x=>x.trim()!==''))rows.push(r);r=[]}
+    else c+=ch;
+  }
+  r.push(c);if(r.some(x=>x.trim()!==''))rows.push(r);
+  if(!rows.length)return[];
+  const h=rows.shift().map(x=>x.trim().toLowerCase());
+  return rows.map(a=>Object.fromEntries(h.map((k,i)=>[k,(a[i]||'').trim()])));
+}
+const csvCell=v=>/[",\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);
+
+/* ================= database ================= */
+function buildDB(rows){
+  const firs=new Map(),persons=new Map(),items=new Map(),scene=new Map(),pend=[];
+  const P=name=>{const id=nm(name);let p=persons.get(id);if(!p){p={id,name:name.trim(),roles:new Map(),notes:new Map(),items:[],assoc:new Map()};persons.set(id,p)}return p};
+  const addItem=(t,v,pid,fno)=>{const key=t+':'+idn(v);let it=items.get(key);if(!it){it={key,type:t,value:v,persons:new Set(),firs:new Set()};items.set(key,it)}if(pid)it.persons.add(pid);it.firs.add(fno);return it};
+  for(const r of rows){
+    if(!r.fir_no)continue;
+    let f=firs.get(r.fir_no);
+    if(!f){f={no:r.fir_no,date:'',state:'',district:'',station:'',crime:'',sections:'',status:'',io:{name:'',rank:'',id:'',phone:''},brief:'',people:new Map()};firs.set(r.fir_no,f)}
+    if(!f.date&&r.date)f.date=r.date;if(!f.state&&r.state)f.state=r.state;if(!f.district&&r.district)f.district=r.district;
+    if(!f.station&&r.station)f.station=r.station;if(!f.crime&&r.crime_type)f.crime=r.crime_type;if(!f.sections&&r.sections)f.sections=r.sections;
+    if(!f.status&&r.status)f.status=r.status;if(!f.brief&&r.brief)f.brief=r.brief;
+    if(!f.io.name&&r.io_name){f.io={name:r.io_name,rank:r.io_rank||'',id:r.io_id||'',phone:r.io_phone||''}}
+    const t=(r.type||'').toLowerCase(),v=r.value;
+    if(!r.person){
+      if(t&&v&&t!=='associate'){
+        if(isBio(t)){const key=t+':'+idn(v);let s=scene.get(key);if(!s){s={key,type:t,value:v,firs:new Set()};scene.set(key,s)}s.firs.add(r.fir_no)}
+        else pend.push({fir:r.fir_no,type:t,value:v});
+      }
+      continue;
+    }
+    const p=P(r.person),role=(r.role||'accused').toLowerCase();
+    p.roles.set(r.fir_no,role);f.people.set(p.id,role);
+    if(r.role_note)p.notes.set(r.fir_no,r.role_note);
+    if(!t||!v)continue;
+    if(t==='associate'){const q=P(v);if(!p.assoc.has(q.id))p.assoc.set(q.id,new Set());if(!q.assoc.has(p.id))q.assoc.set(p.id,new Set());p.assoc.get(q.id).add(r.fir_no);q.assoc.get(p.id).add(r.fir_no);continue}
+    addItem(t,v,p.id,r.fir_no);p.items.push({type:t,value:v,fir:r.fir_no});
+  }
+  for(const fi of pend){
+    const it=addItem(fi.type,fi.value,null,fi.fir);
+    for(const [pid,role] of firs.get(fi.fir).people){if(isSus(role)){it.persons.add(pid);persons.get(pid).items.push({type:fi.type,value:fi.value,fir:fi.fir})}}
+  }
+  return{firs,persons,items,scene};
+}
+function getDB(){if(!S._db)S._db=buildDB(S.records);return S._db}
+function setRecords(rows){S.records=rows;S._db=null;S._reg=null;S.res=null;S.firNo=''}
+function reg(){
+  if(S._reg)return S._reg;
+  S._reg=[...getDB().firs.values()].filter(f=>f.state&&f.crime&&f.date&&!isNaN(new Date(f.date))).map(f=>({no:f.no,t:new Date(f.date).getTime(),state:f.state,district:f.district||'Unknown',station:f.station||'Unknown',crime:f.crime}));
+  return S._reg;
+}
+const fmtDate=d=>{const t=new Date(d);return isNaN(t)?(d||''):t.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
+
+/* ================= analysis ================= */
+function analyze(no){
+  const curRows=S.records.filter(r=>r.fir_no===no);
+  if(!curRows.length)return null;
+  const cur=buildDB(curRows),cf=cur.firs.get(no);
+  const past=buildDB(S.records.filter(r=>r.fir_no!==no&&(!cf.date||!r.date||r.date<=cf.date)));
+  const elig=p=>p.roles.size===0||[...p.roles.values()].some(isSus);
+  const nameOf=id=>(past.persons.get(id)||cur.persons.get(id)||{}).name||id;
+  const place=f=>[f.crime,f.station,f.district].filter(Boolean).join(', ');
+  const ev=new Map(),seeds=new Set(),ctx=[],itemHits=[],unmatched=[],bio=[],sceneF=new Map();
+  const addEv=(id,text,w,firs)=>{if(!ev.has(id))ev.set(id,[]);ev.get(id).push({text,w,firs:firs||[]})};
+  const adj=new Map(),fadj=new Map();
+  const link=(m,a,b,text,firs)=>{if(a===b)return;for(const [x,y] of [[a,b],[b,a]]){if(!m.has(x))m.set(x,new Map());const t=m.get(x);if(!t.has(y))t.set(y,[]);const arr=t.get(y);if(!arr.some(e=>e.text===text))arr.push({text,firs:firs||[]})}};
+  const pairs=(ids,fn)=>{for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)fn(ids[i],ids[j])};
+  // people named in this FIR
+  const curSus=[];
+  for(const p of cur.persons.values()){
+    const role=[...p.roles.values()][0];
+    const pp=past.persons.get(p.id);
+    if(isSus(role)){
+      curSus.push(p.id);seeds.add(p.id);
+      if(pp){const prev=[...pp.roles.entries()].map(([f,r])=>r+' in '+f);addEv(p.id,prev.length?'Named in this FIR and has a past record ('+prev.slice(0,3).join(', ')+')':'Named in this FIR and appears as an associate in past records',15,[...pp.roles.keys()])}
+    }else ctx.push({name:p.name,role,prev:pp?[...pp.roles.entries()].map(([f,r])=>r+' in '+f):[]});
+  }
+  pairs(curSus,(a,b)=>link(adj,a,b,'co-accused in '+no,[no]));
+  pairs([...cur.persons.keys()],(a,b)=>link(fadj,a,b,'named together in '+no,[no]));
+  // items and biometrics from this FIR against past records
+  for(const it of cur.items.values()){
+    const owners=[...it.persons].map(id=>cur.persons.get(id)).filter(Boolean);
+    if(isBio(it.type)){
+      const hp=past.items.get(it.key);
+      if(hp)for(const pid of hp.persons){
+        const pp=past.persons.get(pid),firs=[...hp.firs];
+        owners.forEach(o=>{
+          if(o.id===pid){
+            addEv(pid,lbl(it.type)+' '+it.value+' also matches the biometric on file from '+firs.join(', '),20,firs);
+            bio.push({kind:'onfile',type:it.type,value:it.value,people:[o.name],firs,text:lbl(it.type)+' '+it.value+' of '+o.name+' matches the biometric already on file from '+firs.join(', ')+'.'});
+          }else{
+            seeds.add(pid);
+            addEv(pid,lbl(it.type)+' '+it.value+' is the same as '+o.name+' in this FIR: possible same person under a different name',40,firs);
+            addEv(o.id,lbl(it.type)+' '+it.value+' matches '+pp.name+' in '+firs.join(', ')+': possible same person under a different name',40,firs);
+            link(adj,o.id,pid,'same '+it.type+' '+it.value+' (possible alias)',firs);link(fadj,o.id,pid,'same '+it.type+' '+it.value+' (possible alias)',firs);
+            bio.push({kind:'identity',type:it.type,value:it.value,people:[o.name,pp.name],firs,text:lbl(it.type)+' '+it.value+' of '+o.name+' (this FIR) matches '+pp.name+' from '+firs.join(', ')+'. Possible same person under different names.'});
+          }
+        });
+      }
+      const hs=past.scene.get(it.key);
+      if(hs){
+        const firs=[...hs.firs];
+        owners.forEach(o=>{
+          addEv(o.id,lbl(it.type)+' '+it.value+' matches a print collected at the scene of '+firs.join(', '),30,firs);
+          if(!sceneF.has(o.id))sceneF.set(o.id,new Set());
+          firs.forEach(fno=>{
+            sceneF.get(o.id).add(fno);
+            const f=past.firs.get(fno);
+            for(const [pid,r] of f.people){if(isSus(r)){link(adj,o.id,pid,lbl(it.type).toLowerCase()+' match at the scene of '+fno,[fno]);link(fadj,o.id,pid,lbl(it.type).toLowerCase()+' match at the scene of '+fno,[fno])}}
+          });
+          bio.push({kind:'scene',type:it.type,value:it.value,people:[o.name],firs,text:lbl(it.type)+' '+it.value+' of '+o.name+' (accused in this FIR) matches a print collected at the scene of '+firs.map(fno=>fno+' ('+place(past.firs.get(fno))+')').join(', ')+'. '+o.name+' was not named in that FIR.'});
+        });
+      }
+      continue;
+    }
+    const hit=past.items.get(it.key);
+    if(hit&&hit.persons.size){
+      itemHits.push({it,firs:[...hit.firs],people:[...hit.persons].map(nameOf)});
+      for(const pid of hit.persons){
+        const p=past.persons.get(pid);
+        if(!elig(p)&&!seeds.has(pid))continue;
+        seeds.add(pid);
+        addEv(pid,lbl(it.type)+' '+it.value+' from this FIR was also linked to them in '+[...hit.firs].join(', '),IW[it.type]||5,[...hit.firs]);
+      }
+    }else unmatched.push(it);
+  }
+  // links between people in past records
+  const ok=id=>{const p=past.persons.get(id);return p&&(elig(p)||seeds.has(id))};
+  for(const f of past.firs.values()){
+    const sus=[],all=[];
+    for(const [id,r] of f.people){all.push(id);if(isSus(r)&&ok(id))sus.push(id)}
+    pairs(sus,(a,b)=>link(adj,a,b,'co-accused in '+f.no,[f.no]));
+    pairs(all,(a,b)=>{const ra=f.people.get(a),rb=f.people.get(b);link(fadj,a,b,isSus(ra)&&isSus(rb)?'co-accused in '+f.no:'both named in '+f.no+' ('+ra+' and '+rb+')',[f.no])});
+  }
+  for(const p of past.persons.values())for(const [q,fs] of p.assoc){
+    if(p.id<q){const firs=[...fs],t='known associates (recorded in '+(firs.join(', ')||'the records')+')';if(ok(p.id)&&ok(q))link(adj,p.id,q,t,firs);link(fadj,p.id,q,t,firs)}
+  }
+  for(const it of past.items.values()){
+    const ids=[...it.persons],t=isBio(it.type)?'same '+it.type+' '+it.value+' on file (possible same person under different names)':'shared '+lbl(it.type).toLowerCase()+' '+it.value;
+    pairs(ids.filter(ok),(a,b)=>link(adj,a,b,t,[...it.firs]));
+    pairs(ids,(a,b)=>link(fadj,a,b,t,[...it.firs]));
+  }
+  // layers
+  const dist=new Map(),q=[];
+  for(const s of seeds){dist.set(s,0);q.push(s)}
+  while(q.length){const c=q.shift();for(const nb of (adj.get(c)||new Map()).keys()){if(!dist.has(nb)){dist.set(nb,dist.get(c)+1);q.push(nb)}}}
+  const nodes=new Map();
+  for(const [id,layer] of dist){
+    const p=past.persons.get(id),c=cur.persons.get(id),nb=adj.get(id)||new Map();
+    const parents=[...nb.keys()].filter(k=>dist.get(k)===layer-1).sort();
+    const evs=(ev.get(id)||[]).sort((a,b)=>b.w-a.w);
+    const conn=layer===0?evs.map(e=>({who:'This FIR',text:e.text,firs:e.firs})):parents.map(pid=>({who:nameOf(pid),pid,text:nb.get(pid).map(e=>e.text).join('; '),firs:[...new Set(nb.get(pid).flatMap(e=>e.firs))]}));
+    const past0=p?[...p.roles.entries()].filter(([f,r])=>isSus(r)).map(([f])=>past.firs.get(f)):[];
+    const sameCrime=past0.filter(f=>nm(f.crime)===nm(cf.crime)).length,sameDist=past0.filter(f=>cf.district&&nm(f.district)===nm(cf.district)).length;
+    const toSeeds=[...nb.keys()].filter(k=>dist.get(k)===0).length;
+    const evW=evs.reduce((s,e)=>s+e.w,0);
+    let score=([45,30,15,7][layer]||3)+Math.min(20,past0.length*5)+Math.min(45,evW)+Math.min(10,sameCrime*5)+Math.min(9,sameDist*3)+Math.min(10,toSeeds*3);
+    score=Math.min(100,Math.round(score));
+    const reasons=evs.map(e=>e.text);
+    if(layer>0&&conn.length)reasons.unshift('Connected to '+conn[0].who+': '+conn[0].text);
+    if(!p)reasons.push('No prior record under this name. Verify who this person is.');
+    if(past0.length>1)reasons.push('Repeat accused: '+past0.length+' past FIRs');
+    if(sameCrime)reasons.push('Accused in '+sameCrime+' past '+cf.crime+' FIR'+(sameCrime>1?'s':''));
+    if(sameDist)reasons.push('Past FIR'+(sameDist>1?'s':'')+' in '+cf.district+' ('+sameDist+')');
+    // FIR list that explains the suspicion
+    const fm=new Map(),addF=(fno,why)=>{if(!fm.has(fno))fm.set(fno,[]);if(!fm.get(fno).includes(why))fm.get(fno).push(why)};
+    if(p)for(const [fno,r] of p.roles)addF(fno,'Named as '+r);
+    (sceneF.get(id)||[]).forEach(fno=>addF(fno,'A fingerprint found at the scene matches this person'));
+    conn.forEach(cn=>cn.firs.forEach(fno=>{if(fno!==no)addF(fno,layer===0?cn.text:'Links to '+cn.who+': '+cn.text)}));
+    const firList=[...fm].map(([fno,whys])=>({no:fno,f:past.firs.get(fno),whys})).filter(x=>x.f).sort((a,b)=>String(b.f.date).localeCompare(String(a.f.date)));
+    const ios=[];const seenIO=new Set();
+    firList.forEach(x=>{const k=x.f.io.id||x.f.io.name;if(!k)return;if(!seenIO.has(k)){seenIO.add(k);ios.push({io:x.f.io,firs:[],where:[x.f.station,x.f.district,x.f.state].filter(Boolean).join(', ')})}ios.find(o=>(o.io.id||o.io.name)===k).firs.push(x.no)});
+    const roles=[];
+    if(c)roles.push({no,f:cf,role:[...c.roles.values()][0],note:c.notes.get(no)||'',cur:true});
+    if(p)for(const [fno,r] of p.roles)roles.push({no:fno,f:past.firs.get(fno),role:r,note:p.notes.get(fno)||''});
+    (sceneF.get(id)||[]).forEach(fno=>roles.push({no:fno,f:past.firs.get(fno),role:'not named',note:'A fingerprint found at the scene matches this person.'}));
+    const bioOn=[];const seenB=new Set();
+    [...(p?p.items:[]),...(c?c.items:[])].filter(i=>isBio(i.type)).forEach(i=>{const k=i.type+i.value;if(!seenB.has(k)){seenB.add(k);bioOn.push(i)}});
+    nodes.set(id,{id,name:nameOf(id),layer,score,level:score>=65?'High':score>=40?'Medium':'Low',reasons,conn,parents,isNew:!p,firList,ios,roles,bioOn});
+  }
+  const maxL=Math.max(0,...[...nodes.values()].map(n=>n.layer));
+  const names=new Map();
+  for(const [id,p] of past.persons)names.set(id,p.name);
+  for(const [id,p] of cur.persons)names.set(id,p.name);
+  const res={fir:cf,nodes,itemHits,unmatched,ctx,bio,maxL,edges:[],rings:[],full:fadj,names};
+  for(const [a,m] of adj){if(!nodes.has(a))continue;for(const b of m.keys()){if(a<b&&nodes.has(b))res.edges.push([a,b])}}
+  layout(res);
+  return res;
+}
+function layout(res){
+  const by=[];for(const n of res.nodes.values())(by[n.layer]=by[n.layer]||[]).push(n);
+  let prev=0;const TAU=Math.PI*2;
+  by.forEach((arr,L)=>{
+    if(!arr)return;
+    const R=Math.max(prev+105,arr.length*66/TAU,140);prev=R;res.rings.push({layer:L,r:R});
+    if(L===0){arr.sort((a,b)=>a.name.localeCompare(b.name));arr.forEach((n,i)=>n.ang=i*TAU/arr.length-Math.PI/2)}
+    else{
+      arr.forEach(n=>{let sx=0,sy=0;n.parents.forEach(p=>{const a=res.nodes.get(p).ang;sx+=Math.cos(a);sy+=Math.sin(a)});n.ang=n.parents.length?Math.atan2(sy,sx):0});
+      arr.sort((a,b)=>a.ang-b.ang);
+      const gap=Math.min(TAU/arr.length,.5);
+      for(let i=1;i<arr.length;i++)if(arr[i].ang<arr[i-1].ang+gap)arr[i].ang=arr[i-1].ang+gap;
+    }
+    arr.forEach(n=>{n.x=Math.cos(n.ang)*R;n.y=Math.sin(n.ang)*R});
+  });
+}
+function routeOf(res,n){
+  const out=[];let cur=n,g=0;
+  while(cur&&cur.layer>0&&cur.conn.length&&g++<10){const par=res.nodes.get(cur.conn[0].pid);out.push(cur.name+' is linked to '+cur.conn[0].who+': '+cur.conn[0].text+(cur.conn[0].firs.length?' ('+cur.conn[0].firs.join(', ')+')':''));cur=par}
+  return out;
+}
+
+/* ================= chat assistant ================= */
+function findPeople(q){
+  const res=S.res,ql=nm(q),found=[];
+  for(const id of res.names.keys()){const i=ql.indexOf(id);if(i>=0)found.push({id,i})}
+  const toks=new Map();
+  for(const id of res.names.keys())for(const t of id.split(' '))if(t.length>=3){if(!toks.has(t))toks.set(t,new Set());toks.get(t).add(id)}
+  ql.split(/[^a-z0-9]+/).forEach(w=>{const s=toks.get(w);if(s&&s.size===1){const id=[...s][0];if(!found.some(f=>f.id===id))found.push({id,i:ql.indexOf(w)})}});
+  found.sort((a,b)=>a.i-b.i);
+  return found.map(f=>f.id);
+}
+function pathBetween(a,b){
+  const full=S.res.full;
+  if(a===b)return[a];
+  const prev=new Map([[a,null]]),q=[a];
+  while(q.length){const c=q.shift();if(c===b)break;for(const nb of (full.get(c)||new Map()).keys()){if(!prev.has(nb)){prev.set(nb,c);q.push(nb)}}}
+  if(!prev.has(b))return null;
+  const path=[];let c=b;while(c!==null){path.unshift(c);c=prev.get(c)}
+  return path;
+}
+function edgeText(a,b){const e=(S.res.full.get(a)||new Map()).get(b)||[];return e.map(x=>x.text+(x.firs.length&&!x.firs.some(f=>x.text.includes(f))?' ('+x.firs.join(', ')+')':'')).join('; ')}
+
+/* ---- global data lookups: let the assistant read every FIR/person/item, not just the open FIR ---- */
+function findFIRGlobal(q){
+  const db=getDB(),ql=nm(q);
+  for(const no of db.firs.keys())if(ql.includes(nm(no)))return no;
+  return null;
+}
+function findPersonGlobal(q){
+  const db=getDB(),ql=nm(q),found=[];
+  for(const id of db.persons.keys()){const i=ql.indexOf(id);if(i>=0)found.push({id,i})}
+  if(found.length)return found.sort((a,b)=>a.i-b.i)[0].id;
+  const toks=new Map();
+  for(const id of db.persons.keys())for(const t of id.split(' '))if(t.length>=3){if(!toks.has(t))toks.set(t,new Set());toks.get(t).add(id)}
+  let best=null;
+  ql.split(/[^a-z0-9]+/).forEach(w=>{const s=toks.get(w);if(s&&s.size===1)best=[...s][0]});
+  return best;
+}
+function findItemGlobal(q){
+  const db=getDB(),toks=q.match(/[a-zA-Z0-9][a-zA-Z0-9\-\/]{4,}/g)||[];
+  for(const t of toks){
+    const key=idn(t);if(key.length<5)continue;
+    for(const it of db.items.values())if(idn(it.value)===key)return it;
+  }
+  return null;
+}
+function firSummary(no){
+  const f=getDB().firs.get(no);if(!f)return null;
+  const people=[...f.people.entries()].map(([pid,role])=>{const p=getDB().persons.get(pid);return (p?p.name:pid)+' ('+role+')'});
+  let h='<b>'+esc(f.no)+'</b>: '+esc(f.crime||'crime type not recorded')+(f.sections?' ('+esc(f.sections)+')':'')+'<ul>';
+  h+='<li>Status: '+esc(f.status||'not recorded')+'</li>';
+  h+='<li>Location: '+esc([f.station,f.district,f.state].filter(Boolean).join(', ')||'not recorded')+'</li>';
+  h+='<li>Date: '+esc(fmtDate(f.date)||'not recorded')+'</li>';
+  h+='<li>Investigating officer: '+esc((f.io.rank+' '+f.io.name).trim()||'not recorded')+'</li>';
+  if(f.brief)h+='<li>Brief: '+esc(f.brief)+'</li>';
+  if(people.length)h+='<li>People: '+esc(people.join(', '))+'</li>';
+  return h+'</ul>';
+}
+function personSummaryGlobal(id){
+  const p=getDB().persons.get(id);if(!p)return null;
+  const roles=[...p.roles.entries()].map(([fno,role])=>fno+': '+role);
+  const items=p.items.map(it=>it.type+' '+it.value+' ('+it.fir+')');
+  const assoc=[...p.assoc.keys()].map(aid=>{const a=getDB().persons.get(aid);return a?a.name:aid});
+  let h='<b>'+esc(p.name)+'</b><ul>';
+  h+='<li>Appears in: '+esc(roles.join('; ')||'no FIRs recorded')+'</li>';
+  if(items.length)h+='<li>Linked phones/accounts/vehicles: '+esc(items.join(', '))+'</li>';
+  if(assoc.length)h+='<li>Associates: '+esc(assoc.join(', '))+'</li>';
+  return h+'</ul>';
+}
+function itemSummaryGlobal(it){
+  const persons=[...it.persons].map(id=>{const p=getDB().persons.get(id);return p?p.name:id});
+  return 'The '+esc(it.type)+' <b>'+esc(it.value)+'</b> appears in '+it.firs.size+' FIR'+(it.firs.size===1?'':'s')+' ('+esc([...it.firs].join(', '))+')'+(persons.length?', linked to '+esc(persons.join(', ')):'')+'.';
+}
+function answerStats(q){
+  const db=getDB();if(!db.firs.size)return null;
+  const ql=nm(q),has=re=>re.test(ql);
+  if(has(/how many fir|number of fir|total (number of )?fir|count.*fir/))return'There are <b>'+db.firs.size+'</b> FIRs in the current records.';
+  if(has(/how many (people|person|suspect|accused|individuals)|number of (people|person)|total (people|person)/))return'There are <b>'+db.persons.size+'</b> people recorded across all FIRs.';
+  if(has(/how many (phone|account|vehicle|item)|number of (phone|account|vehicle)/))return'There are <b>'+db.items.size+'</b> phones, accounts and vehicles recorded across all FIRs.';
+  if(has(/status.*(open|closed|pending|under investigation)|breakdown.*status|how many.*(open|closed|pending)/)){
+    const c=new Map();for(const f of db.firs.values())c.set(f.status||'Not recorded',(c.get(f.status||'Not recorded')||0)+1);
+    return'FIR status breakdown: '+esc([...c].map(([k,v])=>k+': '+v).join(', '))+'.';
+  }
+  if(has(/list (all )?fir|show (all )?fir|all firs\b/)){
+    const list=[...db.firs.values()];
+    return'FIRs on record ('+list.length+' total): '+esc(list.slice(0,25).map(f=>f.no+' ('+(f.crime||'unknown')+')').join(', '))+(list.length>25?', and '+(list.length-25)+' more.':'.');
+  }
+  if(has(/fir.*\b(in|at|from)\s|cases in\b/)){
+    const locs=new Set();
+    for(const f of db.firs.values())for(const loc of[f.state,f.district,f.station])if(loc&&nm(loc).length>=3&&ql.includes(nm(loc)))locs.add(loc);
+    if(locs.size){
+      const matched=[...db.firs.values()].filter(f=>[f.state,f.district,f.station].some(loc=>loc&&locs.has(loc)));
+      return'FIRs matching '+esc([...locs].join(', '))+' ('+matched.length+'): '+esc(matched.slice(0,20).map(f=>f.no+' - '+(f.crime||'unknown')).join(', '))+(matched.length>20?', and more.':'.');
+    }
+  }
+  return null;
+}
+
+function findLocation(q){
+  const R=reg(),ql=nm(q);
+  const esRe=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const bestMatch=(vals)=>{let best=null;for(const v of vals){const k=nm(v);if(k.length<3)continue;if(new RegExp('\\b'+esRe(k)+'\\b').test(ql)){if(!best||v.length>best.length)best=v}}return best};
+  const station=bestMatch([...new Set(R.map(x=>x.station).filter(Boolean))]);
+  let district=bestMatch([...new Set(R.map(x=>x.district).filter(Boolean))]);
+  let state=bestMatch([...new Set(R.map(x=>x.state).filter(Boolean))]);
+  if(!station&&!district&&!state)return null;
+  if(station){const rec=R.find(x=>x.station===station);if(rec){district=district||rec.district;state=state||rec.state}}
+  else if(district){const rec=R.find(x=>x.district===district);if(rec)state=state||rec.state}
+  return{state:state||'',district:district||'',station:station||''};
+}
+function answerDash(q){
+  const R=reg();
+  if(!R.length)return'There is no FIR data loaded yet. Add records on the Data page first.';
+  const loc=findLocation(q),D=loc?{...S.dash,...loc}:S.dash,M=dashModel(D),ql=nm(q),has=re=>re.test(ql);
+  const scopeName=D.station?D.station+', '+D.district:D.district?D.district+', '+D.state:D.state||'India';
+  if(has(/most|highest|top state|which state/)&&!D.state){
+    const all=STD.map(s=>[s[1],M.stateCounts.get(s[1])||0]).sort((x,y)=>y[1]-x[1]);
+    return all.length&&all[0][1]?'<b>'+esc(dn(all[0][0]))+'</b> has the most FIRs right now, with '+all[0][1]+'.':'No data for this filter.';
+  }
+  if(has(/hotspot|station/)){
+    return M.places.length?'Hotspot police stations in '+esc(scopeName)+':<ul>'+M.places.map(p=>'<li>'+esc(p.label)+': '+p.n+' FIRs</li>').join('')+'</ul>':'No hotspot stations for this filter.';
+  }
+  if(has(/trend|rising|up|increas/)){
+    const t=M.trends.slice(0,3);
+    return t.length?'Trending up in '+esc(scopeName)+':<ul>'+t.map(x=>'<li>'+esc(x.crime)+': '+x.recent+' recent vs '+x.prior+' before</li>').join('')+'</ul>':'Not enough data to show a trend here.';
+  }
+  if(has(/crime|type/)){
+    return M.hotCrimes.length?'Most common crimes in '+esc(scopeName)+':<ul>'+M.hotCrimes.map(c=>'<li>'+esc(c.crime)+': '+c.n+' FIRs ('+c.share+'%)</li>').join('')+'</ul>':'No crime breakdown for this filter.';
+  }
+  if(has(/\bfir\b|case|crime|record|report|arrest|investigat|accused|suspect|offen[cs]e|statistic|figures|numbers|data/))
+    return'The dashboard currently shows <b>'+M.total+'</b> FIRs for '+esc(scopeName)+'. Ask me about the top state, hotspot stations, trending crimes, or crime types \u2013 or ask me anything else about using TraceOn, like how to open a FIR, upload data, or create an account.';
+  return'I\u2019m not sure about that specific question yet. I can help with the crime dashboard (top state, hotspot stations, trends, crime types), opening a FIR, uploading data, or your account \u2013 try asking me one of those, or rephrase your question.';
+}
+function answerApp(q){
+  const ql=nm(q),has=re=>re.test(ql);
+  if(has(/what.*(day|date).*(today|is it)|today.*date|current date|what('s| is) today('s)? date|what day is (it|today)/))return'Today is <b>'+esc(new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+'</b> (this device\'s clock).';
+  if(has(/what.*(month|year).*(is it|running|now|currently)|current month|which month|this month is|current year|which year/))return'It\u2019s currently <b>'+esc(new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'}))+'</b>, based on this device\'s clock.';
+  if(has(/what.*time.*(is it|now)|current time|what('s| is) the time/))return'It\u2019s <b>'+esc(new Date().toLocaleTimeString())+'</b> right now, based on this device\'s clock.';
+  if(has(/who are you|what('s| is) your name|are you (a )?(bot|ai|chatbot|human)/))return'I\u2019m the TraceOn assistant \u2013 built into this prototype to help you use it and look things up in the case records.';
+  if(has(/thank(s| you)|thx/))return'You\u2019re welcome! Let me know if you have more questions about TraceOn.';
+  if(has(/what.*(your )?suggestion|any (suggestion|tip)|suggest.*(something|me)|what (should|can) i ask|give me.*(tip|idea)|what.*you (recommend|suggest)/)){
+    return S.res?'A few things you could ask me about <b>'+esc(S.res.fir.no)+'</b>: how two people are connected, why someone is a suspect, who the investigating officer was, or which biometrics matched. I can also answer questions about the wider database (any FIR number, person or record), the crime dashboard, uploading data, or your account.':'A few things you could ask me: which state has the most FIRs, show hotspot stations in a state, what crimes are trending, how many FIRs are on record, how to open a FIR, or how to upload data. Open a FIR and I can also answer questions about its network and leads.';
+  }
+  if(has(/^(hi|hello|hey|good\s?(morning|afternoon|evening))\b/))return'Hello! I can help with anything in TraceOn \u2013 opening a FIR, reading the crime dashboard, uploading data, your account, or the prototype in general. What would you like to know?';
+  if(has(/what\s+(is|does)\s+(this|it|traceon|the app|the system|the prototype)|about\s+traceon|what.*traceon.*(do|for)|purpose of (this|traceon)/))return'TraceOn is a criminal network analysis prototype. Give it a FIR number and it searches past records for people, phones, accounts, vehicles and biometrics that match, then builds a network showing how everyone involved is connected \u2013 directly or through a chain of shared evidence. It also has a state/district/station crime dashboard for trends and hotspots. Every lead is meant to be reviewed and confirmed by an investigator, not treated as a finding on its own.';
+  if(has(/create.*account|sign\s?up|new account|register.*account|how.*(make|open).*account/))return'On the login screen, tap <b>Create new account</b> (below the Login button), fill in your name, a username or email, and a password (6 or more characters, entered twice), then submit. Or skip all that and tap <b>Demo login</b> to explore TraceOn right away with sample data.';
+  if(has(/forgot.*password|reset.*password|lost.*password/))return'Tap <b>Forgot password?</b> next to Remember me on the login screen to start a password reset. In a real deployment this would email you a reset link.';
+  if(has(/demo\s?login|demo account|try (it|the) (app|demo)|explore.*sample/))return'Tap <b>Demo login</b> on the login screen \u2013 it signs you in instantly with a sample officer account and the built-in demo data, no registration needed.';
+  if(has(/\blog\s?in\b|sign\s?in\b/)&&!has(/log\s?out|sign\s?out/))return'Enter your username/email and password on the login screen and tap <b>Login</b>, or tap <b>Demo login</b> to explore TraceOn with sample data without creating an account.';
+  if(has(/log\s?out|sign\s?out/))return'Tap <b>Sign out</b> at the top right of any page to log out of TraceOn.';
+  if(has(/upload|\bcsv\b|template|import.*(data|record)|add.*(data|record)/))return'Go to the <b>Data</b> page: tap <b>Download template</b> for a sample CSV with the right columns, fill it in with your FIR records, then tap <b>Upload</b> and choose the file. You can tap <b>Load sample records</b> at any time to reset to the built-in demo data.';
+  if(has(/open.*fir|find.*fir|search.*fir|\bfir number\b|how.*fir\s*work/))return'Go to the <b>FIR</b> page and type a registered FIR number (e.g. FIR-2026-0231), then submit. TraceOn reads the case details already recorded for that FIR and, if matches exist, builds the network of connected people, phones, accounts, vehicles and biometrics so you can explore leads.';
+  if(has(/network|\blayer\b|\bscore\b|how.*(rank|suspect)/))return'Once you open a FIR, TraceOn groups everyone connected to it into layers based on how closely and how strongly they are linked \u2013 people who share more evidence (a phone, account, vehicle or biometric) across more FIRs get a higher score. Open a FIR, then ask me things like "why is X a suspect" or "who are the top suspects".';
+  if(has(/biometric|finger|retina|iris/))return'Biometric matches (fingerprint, iris, etc.) are shown against a FIR\u2019s records when available, along with a confidence percentage. They should always be confirmed by a forensic expert before being relied on.';
+  if(has(/dashboard/)&&!has(/most|highest|top state|hotspot|trend|rising|crime|type/))return'The <b>Dashboard</b> shows crime data at state, district and police-station level. Tap a state on the map to drill into its districts and stations. Try asking me "which state has the most FIRs" or "show hotspot stations".';
+  if(has(/feedback/))return'Use the <b>Feedback</b> page (top menu) to send a suggestion, bug report or feature request. In this prototype it stays on your device and isn\u2019t sent anywhere.';
+  if(has(/contact|helpdesk|helpline|support/))return'You can reach the TraceOn programme team on the <b>Contact</b> page \u2013 it lists a helpdesk email and helpline (placeholder details for this prototype).';
+  if(has(/what can you (do|answer|help)|what.*ask you|help\b.*me|\bhelp$/))return'I can answer questions about using TraceOn: creating an account or logging in, opening a FIR and reading its network, the crime dashboard, uploading data, biometrics, feedback and contact details. Once you open a FIR I can also answer specific questions about the people, connections and leads inside it \u2013 like how two people are linked or who the investigating officer was.';
+  return null;
+}
+function answer(q){
+  const app=answerApp(q);if(app)return app;
+  const stat=answerStats(q);if(stat)return stat;
+  const gfno=findFIRGlobal(q);
+  if(gfno){
+    const fs=firSummary(gfno);
+    return fs+(S.res&&S.res.fir.no===gfno?'':'<p class="hint">Tip: open this FIR number on the FIR page to see its full connection network.</p>');
+  }
+  if(!S.res){
+    const git=findItemGlobal(q);
+    if(git&&/phone|account|vehicle|mobile|number|who|link|match|belongs/.test(nm(q)))return itemSummaryGlobal(git);
+    const gpid=findPersonGlobal(q);
+    if(gpid)return personSummaryGlobal(gpid);
+    return answerDash(q);
+  }
+  const res=S.res,ql=nm(q),ids=findPeople(q),N=id=>res.names.get(id)||id;
+  const has=re=>re.test(ql);
+  if(ids.length>=2){
+    const path=pathBetween(ids[0],ids[1]);
+    if(!path)return'<b>'+esc(N(ids[0]))+'</b> and <b>'+esc(N(ids[1]))+'</b> are not connected in the records I have.';
+    if(path.length===1)return'That is the same person.';
+    let h='<b>'+esc(N(ids[0]))+'</b> and <b>'+esc(N(ids[1]))+'</b> are '+(path.length-1===1?'directly connected':'connected in '+(path.length-1)+' steps')+':<ul>';
+    for(let i=0;i<path.length-1;i++)h+='<li>'+esc(N(path[i]))+' is linked to '+esc(N(path[i+1]))+': '+esc(edgeText(path[i],path[i+1]))+'</li>';
+    return h+'</ul>';
+  }
+  if(ids.length===1){
+    const id=ids[0],n=res.nodes.get(id),nmz=N(id);
+    if(has(/officer|\bio\b|investigat/)){
+      if(!n||!n.ios.length)return'I have no investigating officer details for '+esc(nmz)+'.';
+      return'Investigating officers on FIRs linked to <b>'+esc(nmz)+'</b>:<ul>'+n.ios.map(o=>'<li>'+esc(o.io.rank+' '+o.io.name)+(o.io.id?' ('+esc(o.io.id)+')':'')+', '+esc(o.where)+'. FIRs: '+esc(o.firs.join(', '))+'</li>').join('')+'</ul>';
+    }
+    if(has(/role|summar|what did/)){
+      if(!n)return esc(nmz)+' is not part of this FIR\'s network.';
+      return'Role of <b>'+esc(nmz)+'</b>:<ul>'+n.roles.map(r=>'<li>'+esc(r.no)+(r.cur?' (this FIR)':'')+': '+esc(r.role)+(r.note?'. '+esc(r.note):'')+'</li>').join('')+'</ul>';
+    }
+    if(has(/biometric|finger|retina|print/)){
+      const b=res.bio.filter(x=>x.people.some(p=>nm(p)===id));
+      return b.length?'Biometric matches for <b>'+esc(nmz)+'</b> (96% match confidence):<ul>'+b.map(x=>'<li>'+esc(x.text)+'</li>').join('')+'</ul>':'No biometric match was found for '+esc(nmz)+'.';
+    }
+    if(has(/layer|score|why|suspect|suspic|involved|flag/)){
+      if(!n)return esc(nmz)+' appears in the records but is not linked to this FIR\'s network.';
+      return'<b>'+esc(nmz)+'</b> is in layer '+n.layer+' ('+esc(LNAME[n.layer])+') with a '+n.level.toLowerCase()+' score of '+n.score+'.<ul>'+n.reasons.slice(0,4).map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>';
+    }
+    const nb=[...(res.full.get(id)||new Map())];
+    if(!nb.length)return esc(nmz)+' has no recorded connections.';
+    return'<b>'+esc(nmz)+'</b> is directly connected to:<ul>'+nb.slice(0,8).map(([o,e])=>'<li>'+esc(N(o))+': '+esc(edgeText(id,o))+'</li>').join('')+'</ul>'+(nb.length>8?'and '+(nb.length-8)+' more.':'');
+  }
+  if(has(/biometric|finger|retina|iris|print/)){
+    return res.bio.length?'Biometric matches for this FIR (96% match confidence):<ul>'+res.bio.map(x=>'<li>'+esc(x.text)+'</li>').join('')+'</ul>Matches should be confirmed by a forensic expert.':'No biometric matches were found for this FIR.';
+  }
+  if(has(/top|highest|most|priority|main|who should|suspects/)){
+    const t=[...res.nodes.values()].sort((a,b)=>b.score-a.score).slice(0,3);
+    return'Highest scoring leads:<ul>'+t.map(n=>'<li><b>'+esc(n.name)+'</b>, layer '+n.layer+', score '+n.score+'. '+esc(n.reasons[0]||'')+'</li>').join('')+'</ul>';
+  }
+  if(has(/layer/)){
+    const c=[];for(const n of res.nodes.values())c[n.layer]=(c[n.layer]||0)+1;
+    return'People by layer: '+c.map((k,i)=>k?'layer '+i+': '+k:'').filter(Boolean).join(', ')+'.';
+  }
+  const git=findItemGlobal(q);
+  if(git&&/phone|account|vehicle|mobile|number|who|link|match|belongs/.test(ql))return itemSummaryGlobal(git);
+  const gpid=findPersonGlobal(q);
+  if(gpid&&!res.names.has(gpid))return personSummaryGlobal(gpid)+'<p class="hint">This person is not part of the currently open FIR\'s network.</p>';
+  return'I can answer questions about this FIR\'s network \u2013 try asking how two people are connected, why someone is a suspect, who the investigating officer was, or which biometrics matched. I can also look up any FIR number, person or record in the database, or help with the rest of TraceOn.';
+}
+
+/* ================= dashboard model ================= */
+function dashModel(D){
+  const R=reg();let maxT=0;for(const x of R)if(x.t>maxT)maxT=x.t;
+  const cut=D.period==='all'?0:maxT-(+D.period)*30.44*DAY;
+  const inP=x=>x.t>cut,byC=x=>!D.crime||x.crime===D.crime;
+  const inS=x=>(!D.state||x.state===D.state)&&(!D.district||x.district===D.district)&&(!D.station||x.station===D.station);
+  const cnt=(arr,f)=>{const m=new Map();arr.forEach(x=>{const k=f(x);m.set(k,(m.get(k)||0)+1)});return[...m].sort((a,b)=>b[1]-a[1])};
+  const stateCounts=new Map();
+  for(const x of R)if(inP(x)&&byC(x))stateCounts.set(x.state,(stateCounts.get(x.state)||0)+1);
+  const scope=R.filter(x=>inP(x)&&byC(x)&&inS(x)),scopeAll=R.filter(x=>inP(x)&&inS(x));
+  let drill;
+  if(!D.state)drill={level:'state',rows:[]};
+  else if(!D.district){const st=STBYNAME.get(D.state),m=new Map(cnt(scope,x=>x.district));const ds=st?st[5]:[];const extra=[...m.keys()].filter(k=>!ds.includes(k));drill={level:'district',rows:[...ds,...extra].map(d=>[d,m.get(d)||0]).sort((a,b)=>b[1]-a[1])}}
+  else if(!D.station){const all=[...new Set(R.filter(x=>x.state===D.state&&x.district===D.district).map(x=>x.station))];const m=new Map(cnt(scope,x=>x.station));drill={level:'station',rows:all.map(s=>[s,m.get(s)||0]).sort((a,b)=>b[1]-a[1])}}
+  else drill={level:'crime',rows:cnt(scopeAll,x=>x.crime)};
+  const nM=D.period==='all'?12:Math.min(12,+D.period),md=new Date(maxT),months=[];
+  for(let i=nM-1;i>=0;i--){const d=new Date(md.getFullYear(),md.getMonth()-i,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('en-GB',{month:'short'}),n:0})}
+  for(const x of R)if(byC(x)&&inS(x)){const k=new Date(x.t).toISOString().slice(0,7),m=months.find(z=>z.key===k);if(m)m.n++}
+  const rec=maxT-90*DAY,pri=maxT-180*DAY,sc0=R.filter(inS);
+  const trends=CRIMES.map(c=>{const a=sc0.filter(x=>x.crime===c&&x.t>rec).length,b=sc0.filter(x=>x.crime===c&&x.t<=rec&&x.t>pri).length;return{crime:c,recent:a,prior:b,diff:a-b,pct:b?Math.round((a-b)/b*100):null}}).filter(x=>x.recent+x.prior>=3).sort((a,b)=>b.diff-a.diff);
+  const allRecent=scope.filter(x=>x.t>rec).length,allPrior=scope.filter(x=>x.t<=rec&&x.t>pri).length;
+  const places=cnt(scope,x=>x.district+'|'+x.station+'|'+x.state).slice(0,5).map(([k,n])=>{const [d,s,st]=k.split('|');return{label:s+', '+d,state:st,n}});
+  const natTot=R.filter(inP).length||1,nat=new Map(cnt(R.filter(inP),x=>x.crime)),sa=scopeAll.length||1;
+  const hotCrimes=cnt(scopeAll,x=>x.crime).slice(0,4).map(([c,n])=>({crime:c,n,share:Math.round(n/sa*100),lq:(n/sa)/((nat.get(c)||1)/natTot)}));
+  return{maxT,stateCounts,scope,drill,months,trends,allRecent,allPrior,places,hotCrimes,total:scope.length};
+}
+
+/* ================= UI ================= */
+const PAGES=['home','about','feedback','contact','fir','split','leads','net','dash','data'];
+const BACK={fir:'home',dash:'home',data:'home',about:'home',feedback:'home',contact:'home',split:'fir',leads:'split',net:'split'};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
+function go(p){
+  S.page=p;
+  $('#pg-login').hidden=p!=='login';$('#shell').hidden=p==='login';
+  if(p==='login')return;
+  PAGES.forEach(x=>$('#pg-'+x).hidden=x!==p);
+  updateBack();
+  $('#ttl').textContent={home:'TraceOn',about:'About',feedback:'Feedback',contact:'Contact',fir:'FIR',split:S.firNo||'FIR',leads:'Leads',net:'Network',dash:'Dashboard',data:'Data'}[p];
+  document.querySelectorAll('.subnav button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===p||(p==='home'&&b.dataset.go==='home')?'true':'false'));
+  $('#fab').hidden=false;
+  if(p==='home')renderHome();
+  if(p==='fir')renderFirPage();
+  if(p==='split')renderSplit();
+  if(p==='leads')renderLeads();
+  if(p==='net')openNet();
+  if(p==='dash')renderDash();
+  if(p==='data')renderData();
+  window.scrollTo(0,0);
+}
+/* login */
+const EYE='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#A9BBE6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYEOFF='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#A9BBE6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6 0 10 6 10 6a16 16 0 0 1-3.3 3.8M6.6 6.7C3.9 8.5 2 12 2 12s4 7 10 7c1.5 0 2.8-.4 4-.9"/></svg>';
+function initials(n){return n.replace(/^(Insp\.|Dr\.)\s*/,'').split(' ').filter(Boolean).map(x=>x[0]).join('').slice(0,2).toUpperCase()}
+function showLoginView(reg){$('#lform').hidden=reg;$('#rform').hidden=!reg;$('#lerr').hidden=true;$('#rerr').hidden=true;$('#lok').hidden=true}
+try{const saved=localStorage.getItem('traceon_user');if(saved)$('#uid').value=saved}catch(_){}
+$('#lform').addEventListener('submit',e=>{
+  e.preventDefault();
+  const id=$('#uid').value.trim().toLowerCase(),u=USERS[id];
+  $('#lok').hidden=true;
+  if(!u||u.pw!==$('#pw').value){$('#lerr').textContent='Incorrect username or password.';$('#lerr').hidden=false;return}
+  try{if($('#rem').checked)localStorage.setItem('traceon_user',id);else localStorage.removeItem('traceon_user')}catch(_){}
+  S.user=u;$('#lerr').hidden=true;$('#pw').value='';
+  $('#av').textContent=initials(u.name);
+  go('home');
+});
+$('#showpw').innerHTML=EYEOFF;
+$('#showpw').onclick=()=>{const p=$('#pw'),show=p.type==='password';p.type=show?'text':'password';$('#showpw').innerHTML=show?EYE:EYEOFF;$('#showpw').setAttribute('aria-label',show?'Hide password':'Show password')};
+$('#forgot').onclick=()=>{$('#lerr').hidden=true;$('#lok').textContent='To reset your password, contact your station administrator.';$('#lok').hidden=false};
+$('#newacct').onclick=()=>showLoginView(true);
+$('#backlogin').onclick=()=>showLoginView(false);
+$('#demologin').onclick=()=>{const u=USERS['demo'];S.user=u;$('#lerr').hidden=true;$('#lok').hidden=true;$('#av').textContent=initials(u.name);go('home')};
+$('#rform').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('#rname').value.trim(),id=$('#ruid').value.trim().toLowerCase(),pw=$('#rpw').value,pw2=$('#rpw2').value,er=$('#rerr');
+  const fail=t=>{er.textContent=t;er.hidden=false};
+  if(!name||!id||!pw)return fail('Enter your name, a username or email ID, and a password.');
+  if(pw.length<6)return fail('Use a password with at least 6 characters.');
+  if(pw!==pw2)return fail('The two passwords do not match.');
+  if(USERS[id])return fail('That username or email ID is already taken. Choose another.');
+  USERS[id]={pw,name,role:'Registered officer'};
+  ['rname','ruid','rpw','rpw2'].forEach(k=>$('#'+k).value='');
+  showLoginView(false);
+  $('#uid').value=id;$('#pw').value='';
+  $('#lok').textContent='Account created. Log in to continue.';$('#lok').hidden=false;
+  $('#pw').focus();
+});
+$('#logout').onclick=()=>{S.user=null;S.res=null;S.firNo='';closeChat();$('#pw').value='';go('login')};
+/* Back: on the dashboard it steps up one level (station > district > state > India) before leaving */
+function dashUp(){
+  const D=S.dash;
+  if(D.station)setDash('station','');
+  else if(D.district)setDash('district','');
+  else if(D.state)setDash('state','');
+  else return false;
+  window.scrollTo(0,0);return true;
+}
+function dashBackLabel(){const D=S.dash;return D.station?'Back to '+D.district:D.district?'Back to '+D.state:D.state?'Back to India map':'Back'}
+function updateBack(){const b=$('#back');b.hidden=S.page==='home';b.textContent=S.page==='dash'?dashBackLabel():'Back'}
+$('#back').onclick=()=>{if(S.page==='dash'&&dashUp())return;go(BACK[S.page]||'home')};
+function renderHome(){$('#hi').textContent='Welcome, '+S.user.name;$('#hirole').textContent=S.user.role}
+const fbform=$('#fbform');if(fbform)fbform.addEventListener('submit',e=>{e.preventDefault();toast('Thank you \u2013 your feedback has been recorded');fbform.reset()});
+
+/* FIR entry */
+function firsWithPeople(){return[...getDB().firs.values()].filter(f=>f.people.size).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
+function renderFirPage(){
+  $('#ferr').hidden=true;
+  $('#fsug').innerHTML=firsWithPeople().slice(0,6).map(f=>'<button class="chip" data-fir="'+esc(f.no)+'">'+esc(f.no)+'</button>').join('');
+}
+function openFir(no){
+  no=String(no||'').trim();
+  const err=m=>{$('#ferr').textContent=m;$('#ferr').hidden=false};
+  if(!no){err('Enter a FIR number.');return}
+  const f=[...getDB().firs.values()].find(x=>idn(x.no)===idn(no));
+  if(!f){err('This FIR number is not registered in the database.');return}
+  const res=analyze(f.no);
+  if(!res||!res.nodes.size){err('FIR '+f.no+' is registered, but no accused, phones, accounts or biometrics have been recorded for it yet, so there is nothing to match.');return}
+  $('#ferr').hidden=true;
+  S.res=res;S.firNo=f.no;S.sel=null;S.maxLayer=99;S.fitted=false;S.tabs={};S.chat=[];
+  go('split');
+}
+$('#fgo').onclick=()=>openFir($('#fno').value);
+$('#fno').addEventListener('keydown',e=>{if(e.key==='Enter')openFir($('#fno').value)});
+
+/* split */
+function renderSplit(){
+  const r=S.res,f=r.fir,all=[...r.nodes.values()].sort((a,b)=>b.score-a.score);
+  const acc=[...all].filter(n=>n.layer===0).length;
+  $('#pg-split').innerHTML=
+   '<div class="fh"><h2>'+esc(f.no)+'</h2><div class="m"><span class="pill">'+esc(f.crime)+'</span><span class="pill">'+esc(f.status||'Registered')+'</span></div><div class="m">'+esc([f.station,f.district,f.state].filter(Boolean).join(', '))+' &middot; '+esc(fmtDate(f.date))+'</div><div class="m">Investigating officer: '+esc((f.io.rank+' '+f.io.name).trim()||'not recorded')+'</div></div>'+
+   '<div class="split">'+
+   '<div class="panel pl" role="button" tabindex="0" data-go="leads"><div class="ph"><h3>Leads</h3><span class="go">Open</span></div><p class="hint">'+all.length+' people linked across '+(r.maxL+1)+' layer'+(r.maxL?'s':'')+'. '+r.bio.length+' biometric match'+(r.bio.length===1?'':'es')+'.</p>'+
+   all.slice(0,3).map(n=>'<div class="mini"><span class="dot" style="background:'+lc(n.layer)+'"></span><b>'+esc(n.name)+'</b><em class="'+n.level+'">'+n.score+'</em></div>').join('')+'</div>'+
+   '<div class="panel pn" role="button" tabindex="0" data-go="net"><div class="ph"><h3>Network</h3><span class="go">Open</span></div><canvas id="miniCv" aria-label="Network preview"></canvas></div>'+
+   '</div>';
+  drawGraph($('#miniCv'),null,true);
+}
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.panel')){e.preventDefault();go(e.target.dataset.go)}});
+
+/* leads */
+const connLine=cn=>esc(cn.text)+(cn.firs.length&&!cn.firs.some(f=>cn.text.includes(f))?' ('+esc(cn.firs.join(', '))+')':'');
+const chips=arr=>arr.map(f=>'<span class="fchip">'+esc(f)+'</span>').join('');
+function connBlock(n){
+  if(!n.conn.length)return'';
+  return'<div class="conn"><b>'+(n.layer===0?'Why this person matches this FIR':'How this person is connected')+'</b>'+n.conn.map(cn=>'<div>'+(n.layer===0?'':'<b>'+esc(cn.who)+'</b>: ')+esc(cn.text)+' '+chips(cn.firs)+'</div>').join('')+'</div>';
+}
+function tabFIR(n){
+  if(!n.firList.length)return'<p class="hint">No previous FIRs on record for this person.</p>';
+  return n.firList.map(x=>{const f=x.f;return'<div class="firc"><b>'+esc(x.no)+'</b> <span class="pill">'+esc(f.crime)+'</span> <span class="hint">'+esc(fmtDate(f.date))+'</span><div>'+esc([f.station,f.district,f.state].filter(Boolean).join(', '))+'</div><div class="hint">Sections: '+esc(f.sections||'not recorded')+'. Status: '+esc(f.status||'not recorded')+'.</div><p style="margin:6px 0 0">'+esc(f.brief)+'</p><div class="why">Why this FIR matters: '+esc(x.whys.join('. '))+'</div></div>'}).join('');
+}
+function tabIO(n){
+  if(!n.ios.length)return'<p class="hint">No investigating officer details on record.</p>';
+  return n.ios.map(o=>'<div class="firc"><b>'+esc((o.io.rank+' '+o.io.name).trim())+'</b><div class="hint">Badge ID: '+esc(o.io.id||'not recorded')+'</div><div>'+esc(o.where)+'</div><div>Phone: '+esc(o.io.phone||'not recorded')+'</div><div class="why">Investigated: '+chips(o.firs)+'</div></div>').join('');
+}
+function tabSum(n){
+  let h='<p><b>'+esc(n.name)+'</b> is in layer '+n.layer+' ('+esc(LNAME[n.layer].toLowerCase())+') with a '+n.level.toLowerCase()+' score of '+n.score+'.</p>';
+  h+='<h4>Role in each FIR</h4>'+(n.roles.length?'<ul>'+n.roles.map(r=>'<li><b>'+esc(r.no)+'</b>'+(r.cur?' (this FIR)':'')+', '+esc(r.f.crime)+': '+esc(r.role)+'. '+esc(r.note)+'</li>').join('')+'</ul>':'<p class="hint">No FIR roles on record.</p>');
+  const rt=routeOf(S.res,n);
+  if(rt.length)h+='<h4>Route to this FIR</h4><ul>'+rt.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  if(n.bioOn.length)h+='<h4>Biometrics on file</h4>'+n.bioOn.map(b=>'<span class="tg">'+esc(lbl(b.type))+' '+esc(b.value)+'</span>').join('');
+  return h;
+}
+function pcInner(n){
+  const t=S.tabs[n.id]||'sum';
+  const body=t==='fir'?tabFIR(n):t==='io'?tabIO(n):tabSum(n);
+  return'<div class="pcin">'+connBlock(n)+'<div class="tabs" role="tablist"><button role="tab" data-pt="fir" aria-selected="'+(t==='fir')+'">FIR details</button><button role="tab" data-pt="io" aria-selected="'+(t==='io')+'">Officer details</button><button role="tab" data-pt="sum" aria-selected="'+(t==='sum')+'">Summary</button></div>'+body+'</div>';
+}
+function renderLeads(){
+  const res=S.res,el=$('#pg-leads');
+  if(!res){el.innerHTML='<div class="card"><p>No FIR opened yet.</p><button class="btn" data-go="fir">Enter a FIR number</button></div>';return}
+  const f=res.fir,all=[...res.nodes.values()],total=res.itemHits.length+res.unmatched.length;
+  let h='<h2>'+esc(f.no)+' leads</h2><p class="sum">'+esc(f.crime)+' at '+esc([f.station,f.district].filter(Boolean).join(', '))+'. '+all.length+' people are linked to this FIR across '+(res.maxL+1)+' layer'+(res.maxL?'s':'')+'. '+res.itemHits.length+' of '+total+' phones, accounts and vehicles matched past FIRs, and there '+(res.bio.length===1?'is 1 biometric match':'are '+res.bio.length+' biometric matches')+'.</p>';
+  if(res.bio.length){
+    h+='<h3>Biometric matches</h3><div class="bio">'+res.bio.map(b=>'<div><b>'+(b.kind==='scene'?'Scene fingerprint':b.kind==='identity'?'Same person, different name':'On file')+'.</b> <span class="pill" style="background:#0BB5A4;color:#fff">96% match</span> '+esc(b.text)+' '+chips(b.firs)+'</div>').join('')+'</div><div class="note">The prototype compares stored biometric IDs and reports a 96% match confidence. Real fingerprint or retina matching needs an AFIS or iris system, and every match should be confirmed by a forensic expert.</div>';
+  }
+  if(total){
+    h+='<h3 style="margin-top:14px">Matched items</h3>';
+    res.itemHits.forEach(m=>{h+='<div class="hit"><b>'+esc(lbl(m.it.type))+' '+esc(m.it.value)+'</b> also appears in '+chips(m.firs)+' linked to '+esc(m.people.join(', '))+'.</div>'});
+    res.unmatched.forEach(m=>{h+='<div class="hit miss">'+esc(lbl(m.type))+' '+esc(m.value)+': no match in past FIRs.</div>'});
+  }
+  const layers=[];all.forEach(n=>(layers[n.layer]=layers[n.layer]||[]).push(n));
+  layers.forEach((arr,L)=>{
+    if(!arr)return;arr.sort((a,b)=>b.score-a.score);
+    h+='<div class="lh" style="--c:'+lc(L)+'"><h3>Layer '+L+': '+LNAME[L]+' ('+arr.length+')</h3><p>'+LDESC[L]+'</p></div>';
+    arr.forEach(n=>{
+      const cn=n.conn[0];
+      const line=cn?(n.layer===0?'':'Via '+esc(cn.who)+': ')+connLine(cn):'';
+      h+='<details class="lead pc" style="--c:'+lc(L)+'" data-id="'+esc(n.id)+'"><summary><div class="who"><b>'+esc(n.name)+(n.isNew?' (no prior record)':'')+'</b><span>'+line+'</span></div><div class="sc">'+n.score+'<small class="'+n.level+'">'+n.level+'</small></div></summary>'+pcInner(n)+'</details>';
+    });
+  });
+  if(res.ctx.length){
+    h+='<div class="lh" style="--c:#8A94B8"><h3>Victims and witnesses ('+res.ctx.length+')</h3><p>Listed for context. Not ranked as suspects.</p></div>';
+    res.ctx.forEach(c=>{h+='<div class="hit"><b>'+esc(c.name)+'</b>, '+esc(c.role)+(c.prev.length?'. Also in past FIRs: '+esc(c.prev.join(', ')):'. Not in past FIRs.')+'</div>'});
+  }
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn" data-go="net">View network</button><button class="btn alt" id="exp">Download leads</button></div><div class="note">Leads are matches for an investigator to review. They are not findings of guilt.</div>';
+  el.innerHTML=h;
+}
+function exportLeads(){
+  const res=S.res;if(!res)return;
+  const rows=[['fir_no','layer','name','score','level','why_connected','connecting_firs']];
+  [...res.nodes.values()].sort((a,b)=>a.layer-b.layer||b.score-a.score).forEach(n=>rows.push([res.fir.no,n.layer,n.name,n.score,n.level,n.conn.map(c=>c.text).join(' | '),[...new Set(n.conn.flatMap(c=>c.firs))].join(' ')]));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(csvCell).join(',')).join('\n')],{type:'text/csv'}));a.download='leads-'+res.fir.no+'.csv';document.body.appendChild(a);a.click();a.remove();
+}
+
+/* network */
+const cv=$('#cv');let CW=0,CH=0;
+const vis=n=>n.layer<=S.maxLayer;
+const rad=(n,mini)=>(mini?5:8)+n.score/(mini?22:14);
+function fitView(w,h,maxOnly,limit){
+  let m=60;for(const n of S.res.nodes.values())if((maxOnly||vis(n))&&n.layer<=(limit==null?99:limit))m=Math.max(m,Math.hypot(n.x,n.y));
+  return{x:0,y:0,k:Math.min(w,h)/2/(m+(maxOnly?30:65))};
+}
+function drawGraph(canvas,view,mini){
+  const res=S.res;if(!res||!canvas)return;
+  const r=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1,w=r.width,h=r.height;
+  if(!w||!h)return;
+  canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+  const c=canvas.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);
+  const v=view||fitView(w,h,true),X=q=>q*v.k+v.x+w/2,Y=q=>q*v.k+v.y+h/2;
+  const show=n=>mini||vis(n);
+  res.rings.forEach(rg=>{
+    if(!mini&&rg.layer>S.maxLayer)return;
+    c.beginPath();c.arc(X(0),Y(0),rg.r*v.k,0,Math.PI*2);c.strokeStyle=lc(rg.layer);c.globalAlpha=.35;c.setLineDash([4,5]);c.lineWidth=1.2;c.stroke();c.setLineDash([]);c.globalAlpha=1;
+    if(!mini){c.font='800 11px system-ui';c.textAlign='left';c.lineWidth=3;c.strokeStyle='#fff';c.strokeText('Layer '+rg.layer,X(0)+rg.r*v.k*.72+4,Y(0)-rg.r*v.k*.69);c.fillStyle=lc(rg.layer);c.fillText('Layer '+rg.layer,X(0)+rg.r*v.k*.72+4,Y(0)-rg.r*v.k*.69);c.lineWidth=1.6}
+  });
+  c.lineWidth=mini?1:1.6;
+  res.edges.forEach(([a,b])=>{const A=res.nodes.get(a),B=res.nodes.get(b);if(!show(A)||!show(B))return;c.strokeStyle=lc(Math.max(A.layer,B.layer));c.globalAlpha=.4;c.beginPath();c.moveTo(X(A.x),Y(A.y));c.lineTo(X(B.x),Y(B.y));c.stroke()});
+  c.globalAlpha=.6;
+  for(const n of res.nodes.values()){if(n.layer!==0||!show(n))continue;c.strokeStyle=lc(0);c.beginPath();c.moveTo(X(0),Y(0));c.lineTo(X(n.x),Y(n.y));c.stroke()}
+  c.globalAlpha=1;
+  c.fillStyle='#1F2470';c.beginPath();c.arc(X(0),Y(0),mini?9:15,0,Math.PI*2);c.fill();
+  if(!mini){c.fillStyle='#fff';c.font='800 10px system-ui';c.textAlign='center';c.fillText('FIR',X(0),Y(0)+3.5);c.fillStyle='#1F2470';c.font='700 11px system-ui';c.fillText(res.fir.no,X(0),Y(0)+30)}
+  for(const n of res.nodes.values()){
+    if(!show(n))continue;
+    const px=X(n.x),py=Y(n.y),rr=rad(n,mini);
+    c.beginPath();c.arc(px,py,rr,0,Math.PI*2);c.fillStyle=lc(n.layer);c.fill();
+    if(mini)continue;
+    if(n.isNew){c.setLineDash([3,3]);c.strokeStyle='#161B3D';c.lineWidth=2;c.beginPath();c.arc(px,py,rr+3,0,Math.PI*2);c.stroke();c.setLineDash([])}
+    if(S.sel===n.id){c.strokeStyle='#161B3D';c.lineWidth=3;c.beginPath();c.arc(px,py,rr+4,0,Math.PI*2);c.stroke()}
+    c.font='650 11px system-ui';c.textAlign='center';c.lineWidth=3;c.strokeStyle='#fff';c.strokeText(n.name,px,py+rr+13);c.fillStyle='#161B3D';c.fillText(n.name,px,py+rr+13);c.lineWidth=1.6;
+  }
+}
+function sizeCv(){const r=cv.getBoundingClientRect();CW=r.width;CH=r.height}
+function drawMain(){drawGraph(cv,S.view,false)}
+function openNet(){
+  if(!S.res)return;
+  sizeCv();
+  if(!S.fitted){S.view=fitView(CW,CH,false,1);S.fitted=true}
+  renderNetControls();renderSel();drawMain();
+}
+function renderNetControls(){
+  const res=S.res;
+  const opts=[['All',99]];for(let l=0;l<=res.maxL;l++)opts.push([l===0?'Layer 0 only':'Up to layer '+l,l]);
+  $('#lf').innerHTML=opts.map(([t,v])=>'<button class="chip" aria-pressed="'+(S.maxLayer===v)+'" data-ml="'+v+'">'+t+'</button>').join('');
+  let lg='';for(let l=0;l<=res.maxL;l++)lg+='<span><i style="background:'+lc(l)+'"></i>Layer '+l+'</span>';
+  $('#legend').innerHTML=lg+'<span>Bigger dot = higher score</span><span>Dashed ring = no prior record</span>';
+}
+function renderSel(){
+  const res=S.res,n=res&&S.sel?res.nodes.get(S.sel):null,el=$('#sel');
+  if(!n){el.innerHTML=res?'<p class="hint" style="margin-top:10px">Tap a person to see how they are connected. The view starts on layers 0 and 1. Pinch to zoom out, or tap Fit to see every layer.</p>':'';return}
+  el.innerHTML='<div class="pc card" data-id="'+esc(n.id)+'" style="margin-top:12px;padding:14px 0 0"><div style="padding:0 14px"><h3>'+esc(n.name)+'</h3><span class="pill" style="background:'+lc(n.layer)+';color:#fff;margin-top:6px">Layer '+n.layer+'</span><span class="pill">Score '+n.score+', '+n.level+'</span></div>'+pcInner(n)+'</div>';
+}
+const ptrs=new Map();let drag=null,pinch=null;
+const cpos=e=>{const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+function zoomAt(f,px,py){const v=S.view,nk=Math.max(.15,Math.min(4,v.k*f)),r=nk/v.k,cx=px-CW/2,cy=py-CH/2;v.x=cx-(cx-v.x)*r;v.y=cy-(cy-v.y)*r;v.k=nk;drawMain()}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);const p=cpos(e);ptrs.set(e.pointerId,p);if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y)};drag=null}else drag={sx:p.x,sy:p.y,vx:S.view.x,vy:S.view.y,moved:false}});
+cv.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId))return;const p=cpos(e);ptrs.set(e.pointerId,p);
+  if(ptrs.size===2&&pinch){const [a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y);zoomAt(d/pinch.d,(a.x+b.x)/2,(a.y+b.y)/2);pinch.d=d;return}
+  if(drag){const dx=p.x-drag.sx,dy=p.y-drag.sy;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;S.view.x=drag.vx+dx;S.view.y=drag.vy+dy;drawMain()}
+});
+cv.addEventListener('pointerup',e=>{const p=cpos(e);if(drag&&!drag.moved&&ptrs.size===1)tapNode(p);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;if(!ptrs.size)drag=null});
+cv.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);drag=null;pinch=null});
+cv.addEventListener('wheel',e=>{e.preventDefault();const p=cpos(e);zoomAt(e.deltaY<0?1.12:.89,p.x,p.y)},{passive:false});
+function tapNode(p){
+  const res=S.res;if(!res)return;const v=S.view;let best=null,bd=1e9;
+  for(const n of res.nodes.values()){if(!vis(n))continue;const d=Math.hypot(n.x*v.k+v.x+CW/2-p.x,n.y*v.k+v.y+CH/2-p.y);if(d<rad(n)+10&&d<bd){best=n;bd=d}}
+  S.sel=best?best.id:null;renderSel();drawMain();
+}
+$('#zi').onclick=()=>zoomAt(1.25,CW/2,CH/2);
+$('#zo').onclick=()=>zoomAt(.8,CW/2,CH/2);
+$('#zf').onclick=()=>{S.view=fitView(CW,CH,false);drawMain()};
+
+/* dashboard */
+const HEAT=['#FFF3B0','#FFD166','#FF9F45','#F4623A','#D62839','#7A0C25'];
+function heatColor(n,max){if(!n)return'#E3E7FA';const t=n/max;return HEAT[t<.08?0:t<.2?1:t<.35?2:t<.55?3:t<.8?4:5]}
+const ACTIONS={
+ 'Fraud':['Set up a fast route with banks and the cyber cell to freeze accounts linked to these FIRs.','Cross-check repeated phones and accounts across these FIRs. Shared ones point to organized groups.','Run awareness drives on payment-link and OTP scams in the hotspot areas.'],
+ 'Cyber crime':['Strengthen the cyber cell at the hotspot stations and speed up bank and telecom requests.','Publish quick reporting steps for online scams.'],
+ 'Theft':['Add patrols at peak hours near crowded markets and junctions.','Check CCTV coverage on the streets where these FIRs were filed.'],
+ 'Burglary':['Schedule night patrol beats through the affected lanes.','Advise shops and homes to add lighting and alarms.'],
+ 'Robbery':['Put visible patrols on the routes where robberies cluster, especially after dark.','Review CCTV and checkpoints on exit roads.'],
+ 'Assault':['Increase late-evening patrols around the places where incidents cluster.','Review closing hours for outlets that keep crowds late.'],
+ 'Murder':['Review repeat disputes and known offenders in the district and brief the station heads.','Speed up follow-up on pending cases in the hotspot stations.'],
+ 'Narcotics':['Target surveillance on the places that repeat across FIRs.','Coordinate with the narcotics unit on suppliers behind repeat accused.'],
+ 'Extortion':['Offer a confidential reporting line so victims come forward.','Map the network of repeat accused and their shared phones and accounts.'],
+ 'Vehicle theft':['Set up checkpoints on exit routes and check plates against stolen-vehicle lists.','Patrol parking areas and add lighting.'],
+ 'Crimes against women':['Increase patrols and helpline visibility near colleges, markets and transport hubs.','Make sure women help desks at the hotspot stations are staffed and easy to find.']
+};
+function renderDash(){
+  const D=S.dash,R=reg();
+  updateBack();
+  if(!R.length){$('#pg-dash').innerHTML='<div class="card"><p>No FIR records with a state, crime type and date.</p><button class="btn" data-go="data">Go to Data</button></div>';return}
+  const M=dashModel(D),crimes=[...new Set(R.map(x=>x.crime))].sort();
+  const states=STD.map(s=>s[1]).filter(n=>R.some(x=>x.state===n));
+  const stObj=D.state?STBYNAME.get(D.state):null;
+  const dists=D.state?[...new Set(R.filter(x=>x.state===D.state).map(x=>x.district))].sort():[];
+  const stns=D.district?[...new Set(R.filter(x=>x.state===D.state&&x.district===D.district).map(x=>x.station))].sort():[];
+  const scopeName=D.station?D.station+', '+D.district:D.district?D.district+', '+D.state:D.state||'India';
+  const perLabel=D.period==='all'?'all time':'last '+D.period+' months';
+  const chg=M.allPrior?Math.round((M.allRecent-M.allPrior)/M.allPrior*100):null;
+  const opt=(arr,v,first)=>'<option value="">'+first+'</option>'+arr.map(x=>'<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>').join('');
+  const upTo=D.station?D.district:D.district?D.state:D.state?'India map':'';
+  let upRow=upTo?'<button class="upbtn" data-up="1"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back to '+esc(upTo)+'</button>':'';
+  if(D.station&&D.state)upRow+='<button class="upbtn" data-jump="state" style="margin-left:8px"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 4 12l7 7M4 12h16"/></svg>Back to '+esc(D.state)+' (state)</button>';
+  let h=upRow+'<h2>Crime dashboard</h2><p class="hint">Sample register. Pick a state on the map to see its districts, then a district to see police stations.</p>';
+  h+='<div class="card" style="margin-top:12px"><div class="filters">'+
+   '<div><label for="dcrime">Crime type</label><select id="dcrime" data-f="crime">'+opt(crimes,D.crime,'All crimes')+'</select></div>'+
+   '<div><label for="dper">Period</label><select id="dper" data-f="period">'+[['3','Last 3 months'],['6','Last 6 months'],['12','Last 12 months'],['all','All time']].map(([v,t])=>'<option value="'+v+'"'+(D.period===v?' selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+   '<div><label for="dst">State</label><select id="dst" data-f="state">'+opt(states,D.state,'All India')+'</select></div>'+
+   '<div><label for="ddi">District</label><select id="ddi" data-f="district"'+(D.state?'':' disabled')+'>'+opt(dists,D.district,'All districts')+'</select></div>'+
+   '<div><label for="dps">Police station</label><select id="dps" data-f="station"'+(D.district?'':' disabled')+'>'+opt(stns,D.station,'All stations')+'</select></div>'+
+   '</div><button class="btn alt" id="dreset" style="margin-top:12px">Reset filters</button></div>';
+  h+='<div class="stats"><div class="stat s1"><b>'+M.total+'</b><span>FIRs, '+perLabel+'</span></div><div class="stat s2"><b>'+(chg===null?'n/a':(chg>0?'+':'')+chg+'%')+'</b><span>vs previous 90 days</span></div><div class="stat s3"><b>'+(stObj&&!D.district?stObj[2]:M.places.length)+'</b><span>'+(stObj&&!D.district?'NCRB 2021 rate per 100,000':'hotspot stations')+'</span></div></div>';
+  h+='<div class="crumbs"><button class="chip" data-crumb="">India</button>'+(D.state?'<button class="chip" data-crumb="state">'+esc(D.state)+'</button>':'')+(D.district?'<button class="chip" data-crumb="district">'+esc(D.district)+'</button>':'')+(D.station?'<button class="chip" aria-pressed="true">'+esc(D.station)+'</button>':'')+'</div>';
+  // real India map
+  let mx=1;for(const v of M.stateCounts.values())mx=Math.max(mx,v);
+  if(!S.mapZoom)S.mapZoom=innerWidth<600?1.7:1;
+  const G=INDIA_MAP,order=Object.keys(G.paths).sort((x,y)=>(x===D.state)-(y===D.state));
+  let svg='<svg id="indiaSvg" viewBox="0 0 '+G.w+' '+G.h+'" style="width:'+S.mapZoom*100+'%;height:auto;display:block" role="group" aria-label="Map of India showing FIRs by state">';
+  const fillOf=name=>heatColor(M.stateCounts.get(name)||0,mx);
+  order.forEach(name=>{
+    const n=M.stateCounts.get(name)||0,sel=D.state===name,fill=fillOf(name),tiny=G.dots[name];
+    svg+='<g class="tile-st" data-st="'+esc(name)+'" role="button" tabindex="0" aria-label="'+esc(dn(name))+': '+n+' FIRs"><title>'+esc(dn(name))+': '+n+' FIRs</title><path d="'+G.paths[name]+'" fill="'+fill+'" stroke="'+(sel?'#161B3D':'#fff')+'" stroke-width="'+(sel?2.4:.9)+'" stroke-linejoin="round"/>'+
+      (tiny?tiny.map(([x,y,r])=>'<circle class="dot" cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+fill+'" stroke="'+(sel?'#161B3D':'#5E6787')+'" stroke-width="'+(sel?2:.9)+'"/>').join(''):'')+
+      (G.hits[name]||[]).map(([x,y,r])=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="transparent"/>').join('')+'</g>';
+  });
+  // leader lines first, then labels on top
+  G.labels.forEach(l=>{if(l.t){const nl=l.l.length+(l.i?0:1),hh=nl*6.7+2;let sx=l.x,sy=l.y;
+    if(l.a==='end')sx=l.x+3;else if(l.a==='start')sx=l.x-3;else sy=l.t[1]<l.y?l.y-hh:l.y+hh;
+    svg+='<g pointer-events="none"><line class="ml" x1="'+sx+'" y1="'+sy+'" x2="'+l.t[0]+'" y2="'+l.t[1]+'"/><circle cx="'+l.t[0]+'" cy="'+l.t[1]+'" r="2" fill="#161B3D"/></g>'}});
+  G.labels.forEach(l=>{
+    const n=M.stateCounts.get(l.k)||0,nm=dn(l.k),lines=l.l.slice();
+    let t='<text class="mt" text-anchor="'+l.a+'" font-size="'+l.f+'">';
+    if(l.i){t+='<tspan x="'+l.x+'" y="'+(l.y+4)+'">'+esc(lines[0])+' <tspan class="mc">'+n+'</tspan></tspan>'}
+    else{const tot=lines.length+1,y0=l.y-(tot-1)*6.7+4;lines.forEach((s,i)=>{t+='<tspan x="'+l.x+'" y="'+(y0+i*13.4)+'">'+esc(s)+'</tspan>'});t+='<tspan class="mc" x="'+l.x+'" y="'+(y0+lines.length*13.4)+'">'+n+'</tspan>'}
+    svg+='<g data-st="'+esc(l.k)+'" class="tile-st">'+t+'</text></g>';
+  });
+  svg+='</svg>';
+  h+='<div class="mapbox"><h3 style="margin:2px 4px 8px">FIRs by state'+(D.crime?': '+esc(D.crime):'')+'</h3><div class="mapctl"><button data-zoom="-1" aria-label="Zoom out">&minus;</button><button data-zoom="1" aria-label="Zoom in">+</button><button data-zoom="0">Fit</button><span class="hint">Drag to move around</span></div><div class="mapscroll" id="mapscroll">'+svg+'</div><div class="scale">Fewer '+HEAT.map(c=>'<i style="background:'+c+'"></i>').join('')+' More</div><p class="hint" style="margin:8px 4px 0">Tap a state or union territory to see its districts. Small territories are marked with a dot and a line to their name.</p></div>';
+  if(!D.state){
+    const all=STD.map(s=>[s[1],M.stateCounts.get(s[1])||0]).sort((x,y)=>y[1]-x[1]||x[0].localeCompare(y[0])),amx=Math.max(1,all[0][1]);
+    h+='<div class="sec card"><h3>All states and union territories</h3><p class="hint">Tap a name to open it.</p>'+all.map(([k,n])=>'<button class="bar" data-st="'+esc(k)+'"><span>'+esc(dn(k))+'</span><div class="t"><i style="width:'+n/amx*100+'%"></i></div><b>'+n+'</b></button>').join('')+'</div>';
+  }
+  // drill down
+  const dr=M.drill;
+  if(dr.level!=='state'){
+    const dmx=Math.max(1,...dr.rows.map(r=>r[1]));
+    const title=dr.level==='district'?'Districts in '+D.state:dr.level==='station'?'FIRs by police station in '+D.district:'Crime types at '+D.station;
+    h+='<div class="sec card"><h3>'+esc(title)+'</h3>'+dr.rows.map(([k,n])=>'<button class="bar" '+(dr.level==='district'?'data-d="'+esc(k)+'"':dr.level==='station'?'data-s="'+esc(k)+'"':'')+'><span>'+esc(k)+'</span><div class="t"><i style="width:'+n/dmx*100+'%"></i></div><b>'+n+'</b></button>').join('')+'</div>';
+  }
+  // monthly
+  const tm=Math.max(1,...M.months.map(m=>m.n));
+  h+='<div class="sec card"><h3>FIRs per month: '+esc(scopeName)+(D.crime?', '+esc(D.crime):'')+'</h3><div class="trend">'+M.months.map(m=>'<div><i style="height:'+Math.max(3,m.n/tm*90)+'px"></i>'+m.label+'<br><b>'+m.n+'</b></div>').join('')+'</div></div>';
+  // trends
+  const tr=M.trends.slice(0,6);
+  h+='<div class="sec card"><h3>Trends in '+esc(scopeName)+'</h3><p class="hint">Last 90 days compared with the 90 days before.</p>'+(tr.length?tr.map(t=>{const cls=t.diff>0?'up':t.diff<0?'down':'flat',arrow=t.diff>0?'&#9650; ':t.diff<0?'&#9660; ':'';return'<div class="trow"><b>'+esc(t.crime)+'</b><span class="'+cls+'">'+arrow+(t.pct===null?'new':(t.pct>0?'+':'')+t.pct+'%')+'</span><small>'+t.recent+' FIRs recently, '+t.prior+' before</small></div>'}).join(''):'<p class="hint">Not enough FIRs here to show a trend.</p>')+'</div>';
+  // hotspots
+  h+='<div class="sec card"><h3>Hotspot police stations</h3>'+(M.places.length?M.places.map(p=>'<div class="trow"><b>'+esc(p.label)+'</b><span>'+p.n+' FIRs</span>'+(D.state?'':'<small>'+esc(p.state)+'</small>')+'</div>').join(''):'<p class="hint">No FIRs match these filters.</p>')+'</div>';
+  h+='<div class="sec card"><h3>Hotspot crimes in '+esc(scopeName)+'</h3>'+(M.hotCrimes.length?M.hotCrimes.map(c=>'<div class="trow"><b>'+esc(c.crime)+'</b><span>'+c.n+' FIRs ('+c.share+'%)</span>'+(D.state?'<small>'+c.lq.toFixed(1)+' times its share across India</small>':'')+'</div>').join(''):'<p class="hint">No FIRs match these filters.</p>')+'</div>';
+  if(M.hotCrimes.length){
+    const top=M.hotCrimes[0].crime;
+    h+='<div class="sec card"><h3>What to do about '+esc(top)+'</h3><ul class="acts">'+(ACTIONS[top]||['Review the FIRs together for shared people, places and items.','Increase patrols in the hotspot stations.']).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>';
+  }
+  h+='<div class="note">Map shading and counts come from sample FIRs generated in proportion to the 2021 NCRB crime rates in your map. They are not real FIR counts.</div>';
+  $('#pg-dash').innerHTML=h;
+}
+function setDash(k,v){
+  const D=S.dash;D[k]=v;
+  if(k==='state'){D.district='';D.station=''}
+  if(k==='district')D.station='';
+  renderDash();updateBack();
+}
+
+/* data */
+function renderData(){
+  const db=getDB();
+  $('#dcount').textContent=db.firs.size+' FIRs, '+db.persons.size+' people and '+db.items.size+' phones, accounts, vehicles, places and biometrics recorded.';
+  drawList();
+}
+function drawList(){
+  const q=nm($('#dq').value),list=firsWithPeople().filter(f=>!q||nm([f.no,f.crime,f.station,f.district,f.state].join(' ')).includes(q)).slice(0,40);
+  $('#dlist').innerHTML=list.length?list.map(f=>'<button class="frow" data-fir="'+esc(f.no)+'"><span><b>'+esc(f.no)+'</b> '+esc(f.crime)+'<br><span class="hint">'+esc([f.station,f.district].filter(Boolean).join(', '))+'</span></span><span class="hint">'+esc(fmtDate(f.date))+'</span></button>').join(''):'<p class="hint">No FIRs found.</p>';
+}
+$('#dq').addEventListener('input',drawList);
+$('#reset').onclick=()=>{setRecords(sampleRecords());renderData();toast('Sample records loaded')};
+$('#tpl').onclick=()=>{
+  const ex=[['FIR-2026-0001','2026-08-01','Maharashtra','Pune','Civil Lines PS','Fraud','BNS 318(4)','Under investigation','Sunil Deshmukh','Inspector','PN-2231','020-5550-0142','Short description of the case','Rahul Verma','accused','What this person did','phone','98100-11122']];
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([[TEMPLATE_COLS,...ex].map(r=>r.map(csvCell).join(',')).join('\n')],{type:'text/csv'}));a.download='traceon-template.csv';document.body.appendChild(a);a.click();a.remove();
+};
+$('#file').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const rows=parseCSV(String(rd.result));if(!rows.length||!('fir_no' in rows[0])){toast('Could not read this file. Check the columns.');return}setRecords(rows);renderData();toast(rows.length+' rows loaded')};
+  rd.readAsText(f);e.target.value='';
+});
+
+/* chat */
+function closeChat(){$('#chat').hidden=true}
+function chatChips(){
+  const c=[];
+  if(S.res){
+    const res=S.res,all=[...res.nodes.values()].sort((a,b)=>b.score-a.score),a=all[0],z=[...all].reverse().find(n=>n.layer===res.maxL)||all[all.length-1];
+    if(a&&z&&a!==z)c.push('How are '+a.name+' and '+z.name+' connected?');
+    if(a)c.push('Why is '+a.name+' a suspect?');
+    if(all[1])c.push('Who was the officer on '+all[1].name+'\'s FIRs?');
+    c.push('Show biometric matches','Who are the top suspects?');
+  }else{
+    c.push('Which state has the most FIRs?','What crimes are trending up?','Show hotspot stations','What is TraceOn?','How do I upload data?');
+  }
+  $('#cchips').innerHTML=c.map(t=>'<button data-q="'+esc(t)+'">'+esc(t)+'</button>').join('');
+}
+function renderChat(){
+  const box=$('#msgs');
+  box.innerHTML=S.chat.map(m=>'<div class="msg '+(m.me?'me':'bot')+'">'+m.html+'</div>').join('');
+  box.scrollTop=box.scrollHeight;
+}
+function openChat(){
+  if(!S.chat.length){
+    const w=S.res?'Ask me how people in <b>'+esc(S.res.fir.no)+'</b> are connected, or anything else about TraceOn.':'Ask me anything about TraceOn \u2013 the crime dashboard, opening a FIR, uploading data, or your account. Open a FIR to also ask about its network and leads.';
+    S.chat.push({me:false,html:w});
+  }
+  $('#chat').hidden=false;chatChips();renderChat();
+}
+function ask(q){
+  q=q.trim();if(!q)return;
+  S.chat.push({me:true,html:esc(q)});
+  S.chat.push({me:false,html:answer(q)});
+  $('#cin').value='';renderChat();
+}
+$('#fab').onclick=openChat;$('#cclose').onclick=closeChat;
+$('#csend').onclick=()=>ask($('#cin').value);
+$('#cin').addEventListener('keydown',e=>{if(e.key==='Enter')ask($('#cin').value)});
+
+/* global clicks */
+document.addEventListener('click',e=>{
+  const t=e.target;let x;
+  if((x=t.closest('[data-pt]'))){
+    const box=x.closest('.pc'),id=box.dataset.id;S.tabs[id]=x.dataset.pt;
+    const n=S.res.nodes.get(id),holder=box.querySelector('.pcin');
+    holder.outerHTML=pcInner(n);return;
+  }
+  if((x=t.closest('[data-q]'))){ask(x.dataset.q);return}
+  if((x=t.closest('[data-fir]'))){$('#fno').value=x.dataset.fir;openFir(x.dataset.fir);return}
+  if((x=t.closest('[data-ml]'))){S.maxLayer=+x.dataset.ml;if(S.sel&&!vis(S.res.nodes.get(S.sel)))S.sel=null;renderNetControls();renderSel();S.view=fitView(CW,CH,false);drawMain();return}
+  if((x=t.closest('[data-zoom]'))){const d=+x.dataset.zoom,sv=$('#indiaSvg');S.mapZoom=d===0?1:Math.min(3.2,Math.max(1,+(S.mapZoom+d*.5).toFixed(2)));if(sv)sv.style.width=S.mapZoom*100+'%';return}
+  if(t.closest('[data-up]')){dashUp();return}
+  if((x=t.closest('[data-jump]'))){const j=x.dataset.jump;if(j==='state')setDash('district','');else if(j==='india')setDash('state','');return}
+  if((x=t.closest('[data-st]'))){setDash('state',S.dash.state===x.dataset.st?'':x.dataset.st);return}
+  if((x=t.closest('[data-d]'))){setDash('district',x.dataset.d);return}
+  if((x=t.closest('[data-s]'))){setDash('station',x.dataset.s);return}
+  if((x=t.closest('[data-crumb]'))){const c=x.dataset.crumb;if(c==='')setDash('state','');else if(c==='state')setDash('district','');else setDash('station','');return}
+  if(t.closest('#dreset')){S.dash={crime:'',period:'12',state:'',district:'',station:''};renderDash();return}
+  if(t.closest('#exp')){exportLeads();return}
+  if((x=t.closest('[data-go]'))){go(x.dataset.go);return}
+});
+document.addEventListener('change',e=>{const f=e.target.dataset&&e.target.dataset.f;if(f)setDash(f,e.target.value)});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[data-st]')){e.preventDefault();setDash('state',S.dash.state===e.target.dataset.st?'':e.target.dataset.st)}});
+window.addEventListener('resize',()=>{if(S.page==='net'){sizeCv();drawMain()}if(S.page==='split')drawGraph($('#miniCv'),null,true)});
+
+S.records=sampleRecords();
+go('login');
+</script>
+</body>
+</html>
